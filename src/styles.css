@@ -63,6 +63,8 @@
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-soft: var(--brand-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
   --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --shadow-card: 0 1px 2px oklch(0.2 0.02 264 / 0.05), 0 1px 3px oklch(0.2 0.02 264 / 0.06);
   --shadow-lift: 0 12px 28px -14px oklch(0.2 0.02 264 / 0.22), 0 2px 6px -2px oklch(0.2 0.02 264 / 0.1);
@@ -107,6 +109,8 @@
   --brand: oklch(0.55 0.19 255);
   --brand-foreground: oklch(0.985 0.003 247.858);
   --brand-soft: oklch(0.955 0.026 255);
+  --warning: oklch(0.55 0.16 65);
+  --warning-soft: oklch(0.96 0.045 78);
 }
 
 .dark {
@@ -146,6 +150,8 @@
   --brand: oklch(0.68 0.16 250);
   --brand-foreground: oklch(0.16 0.02 264);
   --brand-soft: oklch(0.28 0.05 255);
+  --warning: oklch(0.78 0.14 75);
+  --warning-soft: oklch(0.28 0.055 65);
 }
 
 @layer base {

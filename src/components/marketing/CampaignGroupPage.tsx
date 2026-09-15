@@ -7,13 +7,12 @@ import { CampaignCard } from "./CampaignCard";
 import { CampaignEditor } from "./CampaignEditor";
 import { EditCampaignDialog } from "./EditCampaignDialog";
 import { ConfirmRevertDialog, TestCampaignDialog } from "./MarketingDialogs";
-import { PromotionSelector } from "./PromotionSelector";
+import { PromotionManager } from "./PromotionManager";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   GROUP_META,
   defaultVariant,
-  effectivePromotion,
   mutate,
   useMarketing,
   type AudienceKey,
@@ -32,14 +31,10 @@ export function CampaignGroupPage({ group }: { group: CampaignGroup }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [editConfirm, setEditConfirm] = useState<string | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
-  const [promotionTarget, setPromotionTarget] = useState<{ campaignId?: string; audience?: AudienceKey } | null>(null);
+  const [managingPromotions, setManagingPromotions] = useState(false);
   const [revertTarget, setRevertTarget] = useState<string | "global" | null>(null);
   const allEnabled = list.length > 0 && list.every((campaign) => campaign.enabled);
   const activeCampaign = campaigns.find((campaign) => campaign.id === editConfirm) ?? null;
-  const promotionCampaign = campaigns.find((campaign) => campaign.id === promotionTarget?.campaignId);
-  const currentPromotionId = promotionTarget?.campaignId
-    ? promotionCampaign?.promotionMode === "custom" ? promotionCampaign.promotionId : null
-    : promotionTarget?.audience ? globalPromotions[promotionTarget.audience] : null;
 
   const leaveManage = () => { setManaging(false); setSelected([]); setStaged({}); };
   const resetCampaign = (id: string) => mutate((draft) => {
@@ -85,12 +80,12 @@ export function CampaignGroupPage({ group }: { group: CampaignGroup }) {
         <section className="mt-5 border-y border-border bg-card py-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div><h3 className="text-[14px] font-semibold text-card-foreground">Promotions</h3><p className="mt-0.5 text-[12px] text-muted-foreground">Global defaults are available to campaigns unless a campaign overrides them.</p></div>
-            <Button variant="ghost" size="sm" onClick={() => setPromotionTarget({ audience: "direct" })}><Gift size={14} />Manage promotions</Button>
+            <Button variant="outline" size="sm" onClick={() => setManagingPromotions(true)}><Gift size={14} />Manage promotions</Button>
           </div>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {(["ota", "direct"] as AudienceKey[]).map((audience) => {
               const promotion = promotions.find((item) => item.id === globalPromotions[audience]);
-              return <div key={audience} className="flex items-center justify-between gap-3 rounded-md border border-border bg-background px-3 py-2.5"><div className="min-w-0"><p className="text-[11px] text-muted-foreground">{audience === "direct" ? "Direct guests" : "OTA guests"}</p><p className="truncate text-[12.5px] font-semibold text-card-foreground">{promotion?.name ?? "No promotion selected"}</p></div><button onClick={() => setPromotionTarget({ audience })} className="shrink-0 text-[11.5px] font-semibold text-brand">{promotion ? "Change" : "Add promo"}</button></div>;
+              return <div key={audience} className="flex items-center justify-between gap-3 rounded-md border border-border bg-background px-3 py-2.5"><div className="min-w-0"><p className="text-[11px] text-muted-foreground">{audience === "direct" ? "Direct guests" : "OTA guests"}</p><p className="truncate text-[12.5px] font-semibold text-card-foreground">{promotion?.name ?? "No promotion selected"}</p></div><Button variant="ghost" size="sm" onClick={() => setManagingPromotions(true)}>{promotion ? "Change" : "Add promo"}</Button></div>;
             })}
           </div>
         </section>
@@ -100,7 +95,7 @@ export function CampaignGroupPage({ group }: { group: CampaignGroup }) {
             <div><h3 className="text-[15px] font-semibold text-foreground">{meta.title}</h3><p className="text-[11.5px] text-muted-foreground">{list.filter((campaign) => campaign.enabled).length} active · {list.length} total</p></div>
             <div className="flex flex-wrap items-center gap-2">
               <Button variant="ghost" size="sm" onClick={() => setRevertTarget("global")}><RotateCcw size={14} />Revert to suggested content</Button>
-              <StrategyBar managing={managing} allEnabled={allEnabled} onToggleManage={() => managing ? leaveManage() : setManaging(true)} onEnableAll={(value) => mutate((draft) => draft.campaigns.forEach((campaign) => { if (campaign.group === group) campaign.enabled = value; }))} />
+              <StrategyBar managing={managing} allEnabled={allEnabled} allSelected={selected.length === list.length} onSelectAll={() => setSelected(selected.length === list.length ? [] : list.map((campaign) => campaign.id))} onToggleManage={() => managing ? leaveManage() : setManaging(true)} onEnableAll={(value) => mutate((draft) => draft.campaigns.forEach((campaign) => { if (campaign.group === group) campaign.enabled = value; }))} />
             </div>
           </div>
 
@@ -110,14 +105,12 @@ export function CampaignGroupPage({ group }: { group: CampaignGroup }) {
               <CampaignCard
                 key={campaign.id}
                 campaign={{ ...campaign, strategy: staged[campaign.id] ?? campaign.strategy }}
-                promotion={effectivePromotion(state, campaign, "direct")}
                 selectable={managing}
                 selected={selected.includes(campaign.id)}
                 onSelect={(value) => setSelected((items) => value ? [...new Set([...items, campaign.id])] : items.filter((id) => id !== campaign.id))}
                 onToggle={(value) => mutate((draft) => { const item = draft.campaigns.find((candidate) => candidate.id === campaign.id); if (item) item.enabled = value; })}
                 onEdit={() => setEditConfirm(campaign.id)}
                 onTest={() => setTesting(campaign.id)}
-                onPromotion={() => setPromotionTarget({ campaignId: campaign.id })}
                 onRevert={() => setRevertTarget(campaign.id)}
               />
             ))}
@@ -129,7 +122,7 @@ export function CampaignGroupPage({ group }: { group: CampaignGroup }) {
       <EditCampaignDialog campaign={activeCampaign} open={Boolean(editConfirm)} onClose={() => setEditConfirm(null)} onContinue={() => { const id = editConfirm; setEditConfirm(null); if (id) setEditing(id); }} />
       {editing && <CampaignEditor id={editing} onClose={() => setEditing(null)} />}
       <TestCampaignDialog campaign={campaigns.find((campaign) => campaign.id === testing) ?? null} open={Boolean(testing)} onClose={() => setTesting(null)} />
-      <PromotionSelector open={Boolean(promotionTarget)} campaignName={promotionCampaign?.name ?? (promotionTarget?.audience === "ota" ? "OTA guests default" : "Direct guests default")} selectedId={currentPromotionId ?? null} onClose={() => setPromotionTarget(null)} onSelect={(id) => mutate((draft) => { if (promotionTarget?.campaignId) { const campaign = draft.campaigns.find((item) => item.id === promotionTarget.campaignId); if (campaign) { campaign.promotionMode = id ? "custom" : "none"; campaign.promotionId = id; } } else if (promotionTarget?.audience) draft.globalPromotions[promotionTarget.audience] = id; })} />
+      <PromotionManager open={managingPromotions} group={group} onClose={() => setManagingPromotions(false)} />
       <ConfirmRevertDialog open={Boolean(revertTarget)} campaignName={revertTarget && revertTarget !== "global" ? campaigns.find((campaign) => campaign.id === revertTarget)?.name : undefined} onClose={() => setRevertTarget(null)} onConfirm={() => { if (revertTarget === "global") list.forEach((campaign) => resetCampaign(campaign.id)); else if (revertTarget) resetCampaign(revertTarget); setRevertTarget(null); }} />
     </MarketingShell>
   );

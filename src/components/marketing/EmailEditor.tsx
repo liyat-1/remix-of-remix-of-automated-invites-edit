@@ -2,7 +2,6 @@ import { useState } from "react";
 import { LayoutTemplate, Rows3 } from "lucide-react";
 import { TemplateLibrary } from "./TemplateLibrary";
 import { LayoutLibrary, LayoutThumb } from "./LayoutLibrary";
-import { MediaThumb } from "./MediaPicker";
 import {
   LAYOUT_LABEL,
   LAYOUT_PRESETS,
@@ -11,7 +10,6 @@ import {
   useMarketing,
   type EmailContent,
   type EmailLayout,
-  type MediaItem,
 } from "@/lib/marketing";
 
 function Field({
@@ -42,14 +40,7 @@ function Field({
 const PHOTO_POOL = LAYOUT_PRESETS.map((l) => l.photo);
 
 /** Image slot in the preview: the attached asset, or the template's cover photo. */
-function Banner({ item, photo, height }: { item?: MediaItem; photo: string; height: number }) {
-  if (item && (item.type === "image" || item.type === "video")) {
-    return (
-      <div className="overflow-hidden" style={{ height }}>
-        <MediaThumb item={item} />
-      </div>
-    );
-  }
+function Banner({ photo, height }: { photo: string; height: number }) {
   return (
     <div className="relative overflow-hidden" style={{ height }}>
       <img src={photo} alt="" loading="lazy" className="size-full object-cover" />
@@ -67,22 +58,17 @@ export function EmailEditor({
   onChange: (v: EmailContent) => void;
   customized?: boolean;
 }) {
-  const { templates, media } = useMarketing();
+  const { templates } = useMarketing();
   const [lib, setLib] = useState(false);
   const [layoutLib, setLayoutLib] = useState(false);
   const [pendingTemplate, setPendingTemplate] = useState<(typeof templates)[number] | null>(null);
   const template = templates.find((t) => t.id === value.templateId) ?? templates[0];
   const accent = template?.accent ?? "#2563eb";
   const layout = normalizeLayout(String(value.layout));
-  const ids = value.mediaIds ?? [];
-  const visualMedia = ids
-    .map((id) => media.find((m) => m.id === id))
-    .filter((m): m is MediaItem => !!m && (m.type === "image" || m.type === "video"));
 
   const set = <K extends keyof EmailContent>(k: K, v: EmailContent[K]) => onChange({ ...value, [k]: v });
 
-  const heroOf = (i: number) =>
-    visualMedia[i]?.url ?? visualMedia[i]?.poster ?? template?.hero ?? PHOTO_POOL[i % PHOTO_POOL.length];
+  const heroOf = (i: number) => template?.hero ?? PHOTO_POOL[i % PHOTO_POOL.length];
   const photo = heroOf(0);
 
   return (
@@ -170,7 +156,7 @@ export function EmailEditor({
           </div>
 
           {(layout === "hero_top" || layout === "gallery_three") && (
-            <Banner item={visualMedia[0]} photo={heroOf(0)} height={140} />
+            <Banner photo={heroOf(0)} height={140} />
           )}
 
           {layout === "full_bleed" ? (
@@ -195,10 +181,10 @@ export function EmailEditor({
                 </span>
               </div>
             </div>
-          ) : layout === "split" ? (
-            <div className="flex gap-4 px-6 py-6">
+          ) : layout === "split" || layout === "image_left" || layout === "image_right" ? (
+            <div className={`flex gap-4 px-6 py-6 ${layout === "image_right" ? "flex-row-reverse" : ""}`}>
               <div className="w-2/5 shrink-0 overflow-hidden rounded">
-                <Banner item={visualMedia[0]} photo={heroOf(0)} height={132} />
+                <Banner photo={heroOf(0)} height={132} />
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="text-[17px] font-semibold leading-snug text-card-foreground">
@@ -224,11 +210,15 @@ export function EmailEditor({
                 {renderPreview(value.body)}
               </p>
 
+              {layout === "headline_first" && <div className="mt-4 overflow-hidden rounded"><Banner photo={heroOf(0)} height={120} /></div>}
+
+              {layout === "cta_focus" && <div className="mt-4 overflow-hidden rounded"><Banner photo={heroOf(0)} height={88} /></div>}
+
               {layout === "gallery_two" && (
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   {[0, 1].map((i) => (
                     <div key={i} className="overflow-hidden rounded">
-                      <Banner item={visualMedia[i]} photo={heroOf(i)} height={92} />
+                      <Banner photo={heroOf(i)} height={92} />
                     </div>
                   ))}
                 </div>
@@ -238,7 +228,7 @@ export function EmailEditor({
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   {[0, 1, 2].map((i) => (
                     <div key={i} className="overflow-hidden rounded">
-                      <Banner item={visualMedia[i + 1]} photo={heroOf(i + 1)} height={72} />
+                      <Banner photo={heroOf(i + 1)} height={72} />
                     </div>
                   ))}
                 </div>
@@ -286,7 +276,6 @@ export function EmailEditor({
         value={layout}
         accent={accent}
         photo={photo}
-        layouts={template?.layouts}
         onSelect={(l: EmailLayout) => set("layout", l)}
       />
 

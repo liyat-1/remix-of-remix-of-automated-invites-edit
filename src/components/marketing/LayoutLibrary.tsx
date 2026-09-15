@@ -107,6 +107,14 @@ export function LayoutThumb({
           </div>
         </>
       )}
+      {(layout === "image_left" || layout === "image_right") && (
+        <div className={`flex flex-1 gap-1 ${layout === "image_right" ? "flex-row-reverse" : ""}`}>
+          {img("w-1/2 rounded-sm")}
+          <div className="flex flex-1 flex-col gap-1 pt-1"><div className="h-2 w-4/5 rounded-sm bg-muted-foreground/45" />{line}{short}{btn}</div>
+        </div>
+      )}
+      {layout === "headline_first" && (<><div className="h-2 w-4/5 rounded-sm bg-muted-foreground/45" />{line}{short}{img("mt-0.5 h-8 w-full rounded-sm")}{btn}</>)}
+      {layout === "cta_focus" && (<><div className="h-2 w-3/4 rounded-sm bg-muted-foreground/45" />{line}<div className="flex flex-1 items-center gap-1">{img("h-full w-1/3 rounded-sm")}<div className="flex flex-1 justify-center">{btn}</div></div></>)}
     </div>
   );
 }
@@ -153,7 +161,7 @@ export function LayoutLibrary({
       </div>
 
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
-        {LAYOUT_PRESETS.filter((preset) => !layouts || layouts.includes(preset.value)).map((l) => {
+        {LAYOUT_PRESETS.map((l) => {
           const active = value === l.value;
           return (
             <button
