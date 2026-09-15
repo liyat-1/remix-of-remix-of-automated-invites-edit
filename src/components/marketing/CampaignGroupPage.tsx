@@ -7,7 +7,6 @@ import { CampaignCard } from "./CampaignCard";
 import { CampaignEditor } from "./CampaignEditor";
 import { EditCampaignDialog } from "./EditCampaignDialog";
 import { ConfirmRevertDialog, TestCampaignDialog } from "./MarketingDialogs";
-import { PromotionSelector } from "./PromotionSelector";
 import { PromotionManager } from "./PromotionManager";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { FileText, Film, ImagePlus, Library, Search, X } from "lucide-react";
+import { FileText, Film, ImagePlus, Library, Search, Upload, X } from "lucide-react";
 import { MediaPicker, MediaThumb } from "./MediaPicker";
 import { mutate, uid, useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,6 @@ export function MediaStrip({
 }) {
   const { media, folders } = useMarketing();
   const [q, setQ] = useState("");
-  const [folder, setFolder] = useState<string>("all");
   const [lib, setLib] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
@@ -29,9 +28,8 @@ export function MediaStrip({
   const attached = ids.map((id) => pool.find((m) => m.id === id)).filter(Boolean) as MediaItem[];
 
   const query = q.trim().toLowerCase();
-  const inFolder = folder === "all" ? pool : pool.filter((m) => m.folder === folder);
   const suggestions = (
-    query ? inFolder.filter((m) => m.name.toLowerCase().includes(query)) : [...inFolder].sort((a, b) => b.addedAt - a.addedAt)
+    query ? pool.filter((m) => m.name.toLowerCase().includes(query)) : [...pool].sort((a, b) => b.addedAt - a.addedAt)
   )
     .filter((m) => !ids.includes(m.id))
     .slice(0, 10);
@@ -99,41 +97,25 @@ export function MediaStrip({
           />
         </div>
 
-        <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1">
-          <FolderChip active={folder === "all"} onClick={() => setFolder("all")} label="All" count={pool.length} />
-           {folders.map((name) => {
-            const count = pool.filter((m) => m.folder === name).length;
-            return (
-              <FolderChip
-                key={name}
-                active={folder === name}
-                onClick={() => setFolder(name)}
-                label={name}
-                count={count}
-              />
-            );
-          })}
-        </div>
-
-        <input ref={fileRef} type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx" className="hidden" onChange={(event) => {
+        <input ref={fileRef} type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx,.ppt,.pptx,.csv,.xls,.xlsx" className="hidden" onChange={(event) => {
           const files = Array.from(event.target.files ?? []);
           const added: string[] = [];
-          mutate((draft) => files.forEach((file) => { const id = uid(); added.push(id); draft.media.unshift({ id, name: file.name, type: file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "document", folder: folder === "all" ? folders[0] ?? "Uploads" : folder, size: `${Math.max(1, Math.round(file.size / 1024))} KB`, url: file.type.startsWith("image/") || file.type.startsWith("video/") ? URL.createObjectURL(file) : undefined, addedAt: Date.now() }); }));
+          mutate((draft) => files.forEach((file) => { const id = uid(); added.push(id); draft.media.unshift({ id, name: file.name, type: file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "document", folder: folders[0] ?? "Uploads", size: `${Math.max(1, Math.round(file.size / 1024))} KB`, url: file.type.startsWith("image/") || file.type.startsWith("video/") ? URL.createObjectURL(file) : undefined, addedAt: Date.now() }); }));
           onChange([...ids, ...added]);
           event.target.value = "";
         }} />
-        <Button variant="outline" size="sm" className="mt-3 w-full border-dashed" onClick={() => fileRef.current?.click()}>Upload from device</Button>
+        <Button variant="brand" size="sm" className="mt-3 w-full" onClick={() => fileRef.current?.click()}><Upload size={14} />Upload from device</Button>
 
         <p className="mt-3 text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground">
           {query ? "Results" : "Recently added"}
         </p>
-        <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+        <div className="mt-2 flex max-h-44 gap-2 overflow-x-auto overflow-y-hidden pb-1">
           {suggestions.map((m) => (
             <button
               key={m.id}
               onClick={() => toggle(m)}
               title={`Attach ${m.name}`}
-              className="w-24 shrink-0 overflow-hidden rounded-lg border border-border bg-background text-left transition-all hover:-translate-y-0.5 hover:border-brand/50 hover:shadow-card"
+              className="w-32 shrink-0 overflow-hidden rounded-lg border border-border bg-background text-left transition-all hover:-translate-y-0.5 hover:border-brand/50 hover:shadow-card"
             >
               <div className="aspect-[4/3] bg-muted">
                 <MediaThumb item={m} />
@@ -156,32 +138,5 @@ export function MediaStrip({
         onSelect={toggle}
       />
     </section>
-  );
-}
-
-function FolderChip({
-  active,
-  onClick,
-  label,
-  count,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-  count: number;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed={active}
-      className={`shrink-0 rounded-full border px-2.5 py-1 text-[11.5px] font-medium transition-colors ${
-        active
-          ? "border-brand bg-brand-soft text-brand"
-          : "border-border bg-background text-muted-foreground hover:border-brand/40 hover:text-foreground"
-      }`}
-    >
-      {label}
-      <span className="ml-1.5 tabular-nums opacity-60">{count}</span>
-    </button>
   );
 }

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { X, Image as ImageIcon, Film, FileText, Search, Check, Play, Folder } from "lucide-react";
+import { X, Image as ImageIcon, Film, FileText, Search, Check, Play, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mutate, uid, useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
 
@@ -113,7 +113,6 @@ export function MediaPicker({
   types?: MediaType[];
 }) {
   const { media, folders } = useMarketing();
-  const [folder, setFolder] = useState<string>("All");
   const [q, setQ] = useState("");
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -124,7 +123,7 @@ export function MediaPicker({
       id: uid(),
       name: file.name,
       type: file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "document",
-      folder: folder === "All" ? folders[0] ?? "Uploads" : folder,
+      folder: folders[0] ?? "Uploads",
       size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
       url: file.type.startsWith("image/") || file.type.startsWith("video/") ? URL.createObjectURL(file) : undefined,
       addedAt: Date.now(),
@@ -135,10 +134,7 @@ export function MediaPicker({
 
   const pool = media.filter((m) => types.includes(m.type));
   const list = pool
-    .filter((m) => (folder === "All" ? true : m.folder === folder))
     .filter((m) => m.name.toLowerCase().includes(q.trim().toLowerCase()));
-
-  const countIn = (f: string) => (f === "All" ? pool.length : pool.filter((m) => m.folder === f).length);
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/45 p-4 backdrop-blur-[2px]">
@@ -173,37 +169,12 @@ export function MediaPicker({
               className="w-full rounded-md border border-input bg-background py-2 pl-9 pr-3 text-[13px] outline-none transition-shadow focus:border-brand focus:ring-2 focus:ring-brand/20"
             />
           </div>
-          <input ref={fileRef} type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx" className="hidden" onChange={(event) => { upload(event.target.files); event.target.value = ""; }} />
-          <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>Upload</Button>
+          <input ref={fileRef} type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx,.ppt,.pptx,.csv,.xls,.xlsx" className="hidden" onChange={(event) => { upload(event.target.files); event.target.value = ""; }} />
+          <Button variant="brand" size="sm" onClick={() => fileRef.current?.click()}><Upload size={14} />Upload files</Button>
         </div>
 
         <div className="flex min-h-0 flex-1">
-          <aside className="w-48 shrink-0 overflow-y-auto border-r border-border p-3">
-            <p className="px-2 pb-1.5 text-[10.5px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Folders
-            </p>
-            {["All", ...folders].map((f) => {
-              const active = folder === f;
-              return (
-                <button
-                  key={f}
-                  onClick={() => setFolder(f)}
-                  aria-pressed={active}
-                  className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] transition-colors ${
-                    active
-                      ? "bg-brand-soft font-semibold text-brand"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
-                >
-                  <Folder size={14} className={active ? "text-brand" : "text-muted-foreground"} />
-                  <span className="min-w-0 flex-1 truncate">{f === "All" ? "All media" : f}</span>
-                  <span className="text-[10.5px] text-muted-foreground">{countIn(f)}</span>
-                </button>
-              );
-            })}
-          </aside>
-
-          <div onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); upload(event.dataTransfer.files); }} className={`grid flex-1 grid-cols-2 content-start gap-3 overflow-y-auto p-5 transition-colors sm:grid-cols-3 ${dragging ? "bg-brand-soft" : ""}`}>
+          <div onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); upload(event.dataTransfer.files); }} className={`grid min-h-[420px] flex-1 grid-cols-2 content-start gap-3 overflow-y-auto p-5 transition-colors sm:grid-cols-3 md:grid-cols-4 ${dragging ? "bg-brand-soft" : ""}`}>
             {list.map((m) => {
               const active = selectedIds.includes(m.id);
               return (
@@ -218,7 +189,7 @@ export function MediaPicker({
                     active ? "border-brand ring-2 ring-brand/25" : "border-border hover:border-brand/45"
                   }`}
                 >
-                  <div className="aspect-[4/3] overflow-hidden bg-muted">
+                  <div className="h-32 overflow-hidden bg-muted sm:h-36">
                     <MediaThumb item={m} />
                   </div>
                   {active && (
