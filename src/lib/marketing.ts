@@ -1,6 +1,15 @@
 import { useSyncExternalStore } from "react";
 import heroAmalfi from "../assets/hero-amalfi.jpg";
 import heroValley from "../assets/hero-valley.jpg";
+import roomBalcony from "../assets/room-balcony.jpg";
+import poolDusk from "../assets/pool-dusk.jpg";
+import breakfastTerrace from "../assets/breakfast-terrace.jpg";
+import lobbyArrival from "../assets/lobby-arrival.jpg";
+import spaTreatment from "../assets/spa-treatment.jpg";
+import familyPool from "../assets/family-pool.jpg";
+import rooftopBar from "../assets/rooftop-bar.jpg";
+import suiteDetail from "../assets/suite-detail.jpg";
+import courtyard from "../assets/courtyard.jpg";
 
 /* ------------------------------------------------------------------ types */
 
