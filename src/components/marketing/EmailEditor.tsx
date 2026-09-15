@@ -6,6 +6,7 @@ import { MediaStrip } from "./MediaStrip";
 import { MediaThumb } from "./MediaPicker";
 import {
   LAYOUT_LABEL,
+  LAYOUT_PRESETS,
   normalizeLayout,
   renderPreview,
   useMarketing,
@@ -27,33 +28,23 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">{label}</span>
+      <span className="text-[11.5px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1.5 w-full rounded-md border border-zinc-200 px-3 py-2 text-[13.5px] outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+        className="mt-1.5 w-full rounded-md border border-input bg-background px-3 py-2 text-[13.5px] text-foreground outline-none transition-shadow focus:border-brand focus:ring-2 focus:ring-brand/20"
       />
     </label>
   );
 }
 
-/** Tiny wireframe of the chosen template, shown on the template card. */
-function TemplateThumb({ accent }: { accent: string }) {
-  return (
-    <div className="flex h-[74px] flex-col gap-1.5 overflow-hidden rounded bg-white p-2 shadow-sm">
-      <div className="rounded-sm" style={{ background: accent, opacity: 0.2, height: 18 }} />
-      <div className="h-2 w-3/4 rounded-sm bg-zinc-300" />
-      <div className="h-1.5 rounded-sm bg-zinc-200" />
-      <div className="h-1.5 w-2/3 rounded-sm bg-zinc-200" />
-      <div className="mt-auto h-2.5 w-10 rounded-sm" style={{ background: accent }} />
-    </div>
-  );
-}
+/** Still frame used behind an image slot when nothing is attached yet. */
+const PHOTO_POOL = LAYOUT_PRESETS.map((l) => l.photo);
 
-
-function Banner({ item, accent, height }: { item?: MediaItem; accent: string; height: number }) {
-  if (item) {
+/** Image slot in the preview: the attached asset, or the template's cover photo. */
+function Banner({ item, photo, height }: { item?: MediaItem; photo: string; height: number }) {
+  if (item && (item.type === "image" || item.type === "video")) {
     return (
       <div className="overflow-hidden" style={{ height }}>
         <MediaThumb item={item} />
@@ -61,10 +52,9 @@ function Banner({ item, accent, height }: { item?: MediaItem; accent: string; he
     );
   }
   return (
-    <div
-      style={{ height, background: `linear-gradient(135deg, ${accent}33, ${accent}0d)` }}
-      aria-hidden
-    />
+    <div className="relative overflow-hidden" style={{ height }}>
+      <img src={photo} alt="" loading="lazy" className="size-full object-cover" />
+    </div>
   );
 }
 
@@ -89,41 +79,53 @@ export function EmailEditor({
 
   const set = <K extends keyof EmailContent>(k: K, v: EmailContent[K]) => onChange({ ...value, [k]: v });
 
-  const centred = layout === "full_bleed";
+  const heroOf = (i: number) =>
+    visualMedia[i]?.url ?? visualMedia[i]?.poster ?? template?.hero ?? PHOTO_POOL[i % PHOTO_POOL.length];
+  const photo = heroOf(0);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div className="space-y-5">
         {/* Template and layout, side by side */}
         <section className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-zinc-200 p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Template</p>
-            <p className="mt-0.5 truncate text-[13px] font-semibold text-zinc-900">
+          <div className="rounded-lg border border-border bg-card p-3 shadow-card">
+            <p className="text-[10.5px] font-semibold uppercase tracking-wide text-muted-foreground">Template</p>
+            <p className="mt-0.5 truncate text-[13px] font-semibold text-card-foreground">
               {template?.name ?? "None"}
             </p>
-            <div className="mt-2 rounded bg-zinc-50 p-1.5">
-              <TemplateThumb accent={accent} />
+            <div className="mt-2 overflow-hidden rounded-md border border-border bg-muted">
+              <div className="relative aspect-[16/9]">
+                {template?.hero && (
+                  <img
+                    src={template.hero}
+                    alt={`${template.name} cover photograph`}
+                    loading="lazy"
+                    className="size-full object-cover"
+                  />
+                )}
+                <span className="absolute inset-x-0 bottom-0 h-1" style={{ background: accent }} />
+              </div>
             </div>
             <button
               onClick={() => setLib(true)}
-              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-zinc-200 py-1.5 text-[12px] font-medium text-zinc-700 hover:border-zinc-300"
+              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-input bg-background py-1.5 text-[12px] font-medium text-card-foreground transition-colors hover:border-brand/50 hover:bg-muted/50"
             >
-              <LayoutTemplate size={13} className="text-zinc-400" />
+              <LayoutTemplate size={13} className="text-muted-foreground" />
               {template ? "Change template" : "Choose template"}
             </button>
           </div>
 
-          <div className="rounded-lg border border-zinc-200 p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Layout</p>
-            <p className="mt-0.5 truncate text-[13px] font-semibold text-zinc-900">{LAYOUT_LABEL(layout)}</p>
-            <div className="mt-2 rounded bg-zinc-50 p-1.5">
-              <LayoutThumb layout={layout} accent={accent} />
+          <div className="rounded-lg border border-border bg-card p-3 shadow-card">
+            <p className="text-[10.5px] font-semibold uppercase tracking-wide text-muted-foreground">Layout</p>
+            <p className="mt-0.5 truncate text-[13px] font-semibold text-card-foreground">{LAYOUT_LABEL(layout)}</p>
+            <div className="mt-2 rounded-md bg-muted/60 p-1.5">
+              <LayoutThumb layout={layout} accent={accent} photo={photo} />
             </div>
             <button
               onClick={() => setLayoutLib(true)}
-              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-zinc-200 py-1.5 text-[12px] font-medium text-zinc-700 hover:border-zinc-300"
+              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-input bg-background py-1.5 text-[12px] font-medium text-card-foreground transition-colors hover:border-brand/50 hover:bg-muted/50"
             >
-              <Rows3 size={13} className="text-zinc-400" />
+              <Rows3 size={13} className="text-muted-foreground" />
               Change layout
             </button>
           </div>
@@ -131,18 +133,17 @@ export function EmailEditor({
 
         {/* Content */}
         <section className="space-y-4">
-
           <Field label="Subject" value={value.subject} onChange={(v) => set("subject", v)} />
           <Field label="Preheader" value={value.preheader} onChange={(v) => set("preheader", v)} />
           <Field label="Heading" value={value.heading} onChange={(v) => set("heading", v)} />
 
           <label className="block">
-            <span className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">Body</span>
+            <span className="text-[11.5px] font-semibold uppercase tracking-wide text-muted-foreground">Body</span>
             <textarea
               value={value.body}
               onChange={(e) => set("body", e.target.value)}
               rows={5}
-              className="mt-1.5 w-full rounded-md border border-zinc-200 px-3 py-2 text-[13.5px] leading-relaxed outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+              className="mt-1.5 w-full rounded-md border border-input bg-background px-3 py-2 text-[13.5px] leading-relaxed text-foreground outline-none transition-shadow focus:border-brand focus:ring-2 focus:ring-brand/20"
             />
           </label>
 
@@ -167,48 +168,53 @@ export function EmailEditor({
       </div>
 
       {/* Live preview */}
-      <div className="rounded-lg bg-zinc-100 p-5 lg:sticky lg:top-4 lg:self-start">
-        <p className="mb-3 text-[11.5px] uppercase tracking-wide text-zinc-500">
-          Live preview · {LAYOUT_LABEL(layout)}
+      <div className="rounded-lg border border-border bg-muted/50 p-4 lg:sticky lg:top-4 lg:self-start">
+        <p className="mb-3 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span>Live preview</span>
+          <span className="normal-case tracking-normal text-foreground/60">{LAYOUT_LABEL(layout)}</span>
         </p>
-        <div className="mx-auto max-w-[460px] overflow-hidden rounded-md bg-white shadow-sm">
-          <div className="border-b border-zinc-100 px-5 py-3">
-            <p className="text-[13px] font-semibold text-zinc-900">{renderPreview(value.subject)}</p>
-            <p className="text-[12px] text-zinc-400">{renderPreview(value.preheader)}</p>
+        <div className="mx-auto max-w-[460px] overflow-hidden rounded-md border border-border bg-card shadow-lift">
+          <div className="border-b border-border px-5 py-3">
+            <p className="text-[13px] font-semibold text-card-foreground">{renderPreview(value.subject)}</p>
+            <p className="mt-0.5 text-[12px] text-muted-foreground">{renderPreview(value.preheader)}</p>
           </div>
 
           {(layout === "hero_top" || layout === "gallery_three") && (
-             <Banner item={visualMedia[0]} accent={accent} height={128} />
+            <Banner item={visualMedia[0]} photo={heroOf(0)} height={140} />
           )}
 
           {layout === "full_bleed" ? (
-            <div
-              className="px-6 py-10 text-center"
-              style={{ background: `linear-gradient(135deg, ${accent}2e, ${accent}0d)` }}
-            >
-              <h3 className="text-[22px] font-semibold leading-snug text-zinc-900">
-                {renderPreview(value.heading)}
-              </h3>
-              <p className="mx-auto mt-2.5 max-w-[320px] whitespace-pre-wrap text-[13.5px] leading-relaxed text-zinc-600">
-                {renderPreview(value.body)}
-              </p>
-              <span
-                className="mt-5 inline-block rounded px-6 py-3 text-[13px] font-semibold text-white"
-                style={{ background: accent }}
-              >
-                {value.ctaLabel}
-              </span>
+            <div className="relative px-6 py-12 text-center">
+              <img src={heroOf(0)} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
+              <div
+                className="absolute inset-0"
+                style={{ background: `linear-gradient(180deg, ${accent}e6, ${accent}b3)` }}
+              />
+              <div className="relative">
+                <h3 className="text-[22px] font-semibold leading-snug text-white">
+                  {renderPreview(value.heading)}
+                </h3>
+                <p className="mx-auto mt-2.5 max-w-[320px] whitespace-pre-wrap text-[13.5px] leading-relaxed text-white/85">
+                  {renderPreview(value.body)}
+                </p>
+                <span
+                  className="mt-5 inline-block rounded bg-white px-6 py-3 text-[13px] font-semibold"
+                  style={{ color: accent }}
+                >
+                  {value.ctaLabel}
+                </span>
+              </div>
             </div>
           ) : layout === "split" ? (
             <div className="flex gap-4 px-6 py-6">
               <div className="w-2/5 shrink-0 overflow-hidden rounded">
-                 <Banner item={visualMedia[0]} accent={accent} height={130} />
+                <Banner item={visualMedia[0]} photo={heroOf(0)} height={132} />
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="text-[17px] font-semibold leading-snug text-zinc-900">
+                <h3 className="text-[17px] font-semibold leading-snug text-card-foreground">
                   {renderPreview(value.heading)}
                 </h3>
-                <p className="mt-2 whitespace-pre-wrap text-[13px] leading-relaxed text-zinc-600">
+                <p className="mt-2 whitespace-pre-wrap text-[13px] leading-relaxed text-muted-foreground">
                   {renderPreview(value.body)}
                 </p>
                 <span
@@ -220,11 +226,11 @@ export function EmailEditor({
               </div>
             </div>
           ) : (
-            <div className={`px-6 py-6 ${centred ? "text-center" : "text-left"}`}>
-              <h3 className="text-[20px] font-semibold leading-snug text-zinc-900">
+            <div className="px-6 py-6 text-left">
+              <h3 className="text-[20px] font-semibold leading-snug text-card-foreground">
                 {renderPreview(value.heading)}
               </h3>
-              <p className="mt-2.5 whitespace-pre-wrap text-[13.5px] leading-relaxed text-zinc-600">
+              <p className="mt-2.5 whitespace-pre-wrap text-[13.5px] leading-relaxed text-muted-foreground">
                 {renderPreview(value.body)}
               </p>
 
@@ -232,7 +238,7 @@ export function EmailEditor({
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   {[0, 1].map((i) => (
                     <div key={i} className="overflow-hidden rounded">
-                       <Banner item={visualMedia[i]} accent={accent} height={90} />
+                      <Banner item={visualMedia[i]} photo={heroOf(i)} height={92} />
                     </div>
                   ))}
                 </div>
@@ -242,7 +248,7 @@ export function EmailEditor({
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   {[0, 1, 2].map((i) => (
                     <div key={i} className="overflow-hidden rounded">
-                       <Banner item={visualMedia[i + 1]} accent={accent} height={70} />
+                      <Banner item={visualMedia[i + 1]} photo={heroOf(i + 1)} height={72} />
                     </div>
                   ))}
                 </div>
@@ -257,7 +263,7 @@ export function EmailEditor({
             </div>
           )}
 
-          <div className="border-t border-zinc-100 px-6 py-4 text-[11px] text-zinc-400">
+          <div className="border-t border-border px-6 py-4 text-[11px] text-muted-foreground">
             Holiday Inn New York City – Times Square · Unsubscribe
           </div>
         </div>
@@ -285,9 +291,9 @@ export function EmailEditor({
         onClose={() => setLayoutLib(false)}
         value={layout}
         accent={accent}
+        photo={photo}
         onSelect={(l: EmailLayout) => set("layout", l)}
       />
-
     </div>
   );
 }
