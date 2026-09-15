@@ -47,20 +47,47 @@ export type EmailLayout =
   | "gallery_two"
   | "gallery_three";
 
-export const LAYOUT_PRESETS: { value: EmailLayout; label: string; desc: string }[] = [
-  { value: "hero_top", label: "Hero on top", desc: "Large image, then heading, copy and button." },
-  { value: "text_only", label: "Text only", desc: "Copy first, no imagery. Best for short notices." },
-  { value: "split", label: "Split", desc: "Image beside the copy, button underneath." },
-  { value: "full_bleed", label: "Full bleed offer", desc: "Centred offer over a coloured banner." },
+export const LAYOUT_PRESETS: {
+  value: EmailLayout;
+  label: string;
+  desc: string;
+  photo: string;
+}[] = [
+  {
+    value: "hero_top",
+    label: "Hero on top",
+    desc: "Large image, then heading, copy and button.",
+    photo: poolDusk,
+  },
+  {
+    value: "text_only",
+    label: "Text only",
+    desc: "Copy first, no imagery. Best for short notices.",
+    photo: suiteDetail,
+  },
+  {
+    value: "split",
+    label: "Split",
+    desc: "Image beside the copy, button underneath.",
+    photo: breakfastTerrace,
+  },
+  {
+    value: "full_bleed",
+    label: "Full bleed offer",
+    desc: "Centred offer over a full-width photograph.",
+    photo: rooftopBar,
+  },
   {
     value: "gallery_two",
     label: "Two images below",
     desc: "Heading and copy, then two images side by side above the button.",
+    photo: familyPool,
   },
   {
     value: "gallery_three",
     label: "Three card strip",
     desc: "Hero, copy, then a three card strip of highlights.",
+    photo: courtyard,
   },
 ];
 
@@ -86,6 +113,8 @@ export type MediaItem = {
   size: string;
   dims?: string;
   url?: string;
+  /** Still frame shown in place of a video, so the grid reads like a real library. */
+  poster?: string;
   addedAt: number;
 };
 
@@ -95,6 +124,8 @@ export type EmailTemplate = {
   desc: string;
   category: string;
   accent: string;
+  /** Cover photograph shown on the template card and used behind the preview. */
+  hero: string;
   heading: string;
   body: string;
   ctaLabel: string;
