@@ -148,7 +148,7 @@ export function MediaLibraryPage() {
             <span className="text-[10.5px] tabular-nums text-muted-foreground">{countIn("All")}</span>
           </button>
 
-          <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:block">
+          <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:block">
            {folders.map((f) => {
             const active = folder === f;
             if (renamingFolder === f) {

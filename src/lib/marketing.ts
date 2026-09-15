@@ -345,12 +345,12 @@ function variantFrom(seed: Seed, key: AudienceKey): Variant {
 
 function seedState(): MarketingState {
   return {
-    campaigns: SEEDS.map((s) => ({
+    campaigns: SEEDS.map((s, i) => ({
       id: s.id,
       name: s.name,
       timing: s.timing,
       group: s.group,
-      enabled: false,
+      enabled: i % 5 !== 4,
       strategy: s.strategy ?? "text",
       variants: { direct: variantFrom(s, "direct"), ota: variantFrom(s, "ota") },
     })),
