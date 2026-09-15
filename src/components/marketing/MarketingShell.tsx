@@ -13,6 +13,8 @@ import {
   Globe,
   Info,
 } from "lucide-react";
+import propertyPhoto from "../../assets/pool-dusk.jpg";
+import { CURRENT_USER, initialsOf } from "@/lib/marketing";
 
 type Item = { label: string; to?: string; icon: React.ComponentType<{ size?: number; className?: string }> };
 
@@ -41,6 +43,13 @@ const GROUPS: { label?: string; items: Item[] }[] = [
   },
 ];
 
+const MOBILE_NAV = [
+  { label: "Invites", to: "/marketing/invites" },
+  { label: "Transactional", to: "/marketing/transactional" },
+  { label: "In-property", to: "/marketing/in-property" },
+  { label: "Media", to: "/marketing/media" },
+];
+
 /**
  * The enterprise application shell: property selector, left navigation and a
  * compact page header. Matches the existing Directful dashboard chrome.
@@ -55,38 +64,54 @@ export function MarketingShell({
   const pathname = useRouterState({ select: (r) => r.location.pathname });
 
   return (
-    <div className="flex min-h-dvh bg-[#f5f6f7] text-zinc-900">
-      <aside className="sticky top-0 hidden h-dvh w-[264px] shrink-0 flex-col overflow-y-auto border-r border-zinc-200 bg-white lg:flex">
-        <div className="border-b border-zinc-200 px-5 py-4">
-          <p className="text-[10.5px] font-semibold uppercase tracking-wider text-zinc-400">
-            Holiday Inn
-          </p>
-          <button className="mt-1 flex w-full items-start justify-between gap-2 text-left">
-            <span className="text-[14px] font-semibold leading-snug text-zinc-900">
-              New York City – Times Square by IHG
+    <div className="flex min-h-dvh bg-canvas text-foreground">
+      <aside className="sticky top-0 hidden h-dvh w-[272px] shrink-0 flex-col overflow-y-auto border-r border-border bg-card lg:flex">
+        <div className="flex items-center gap-2.5 border-b border-border px-5 py-4">
+          <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand text-[14px] font-bold text-brand-foreground">
+            D
+          </span>
+          <div className="min-w-0">
+            <p className="text-[13.5px] font-semibold tracking-tight text-card-foreground">Directful</p>
+            <p className="text-[10.5px] text-muted-foreground">Guest messaging</p>
+          </div>
+        </div>
+
+        <div className="border-b border-border px-3 py-3">
+          <button className="group flex w-full items-center gap-2.5 rounded-lg border border-border bg-background/70 p-2 text-left transition-colors hover:border-brand/45 hover:bg-muted/60">
+            <img
+              src={propertyPhoto}
+              alt="Property photograph"
+              loading="lazy"
+              className="size-10 shrink-0 rounded-md object-cover"
+            />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[12px] font-semibold text-card-foreground">
+                Holiday Inn Times Square
+              </span>
+              <span className="block truncate text-[11px] text-muted-foreground">New York City · IHG</span>
             </span>
-            <ChevronDown size={16} className="mt-0.5 shrink-0 text-zinc-400" />
+            <ChevronDown size={15} className="shrink-0 text-muted-foreground transition-transform group-hover:translate-y-0.5" />
           </button>
         </div>
 
         <nav className="flex-1 px-2.5 py-3">
           {GROUPS.map((group, gi) => (
-            <div key={gi} className={gi > 0 ? "mt-4 border-t border-zinc-100 pt-4" : ""}>
+            <div key={gi} className={gi > 0 ? "mt-4 border-t border-border pt-4" : ""}>
               {group.label && (
-                <p className="px-2.5 pb-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-zinc-400">
+                <p className="px-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                   {group.label}
                 </p>
               )}
               {group.items.map((item) => {
                 const active = item.to ? pathname.startsWith(item.to) : false;
-                const cls = `flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-left text-[13px] transition-colors ${
+                const cls = `flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-left text-[12.5px] transition-colors ${
                   active
-                    ? "bg-blue-50 font-semibold text-blue-700"
-                    : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                    ? "bg-brand-soft font-semibold text-brand"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`;
                 const inner = (
                   <>
-                    <item.icon size={16} className={active ? "text-blue-600" : "text-zinc-400"} />
+                    <item.icon size={16} className={active ? "text-brand" : "text-muted-foreground"} />
                     <span className="min-w-0 flex-1 leading-snug">{item.label}</span>
                   </>
                 );
@@ -104,20 +129,52 @@ export function MarketingShell({
           ))}
         </nav>
 
-        <div className="border-t border-zinc-100 px-5 py-3 text-[11px] text-zinc-400">
-          Dashboard version 7.73.0
+        <div className="border-t border-border px-3 py-3">
+          <div className="flex items-center gap-2.5 rounded-lg px-2 py-1.5">
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-foreground text-[11px] font-semibold text-background">
+              {initialsOf(CURRENT_USER.name)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[12px] font-semibold text-card-foreground">{CURRENT_USER.name}</p>
+              <p className="truncate text-[10.5px] text-muted-foreground">Property administrator</p>
+            </div>
+          </div>
+          <p className="px-2 pt-2 text-[10px] text-muted-foreground">Dashboard version 7.73.0</p>
         </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-zinc-200 bg-white px-6 py-3.5">
-          <h1 className="truncate text-[19px] font-semibold tracking-tight">{title}</h1>
-          <div className="flex items-center gap-4 text-zinc-400">
-            <Info size={18} />
-            <span className="hidden text-[12.5px] text-zinc-500 sm:inline">View as client</span>
-            <Globe size={18} />
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-border bg-card/85 px-4 py-3 backdrop-blur-md sm:px-6">
+          <h1 className="truncate text-[18px] font-semibold tracking-tight text-card-foreground">{title}</h1>
+          <div className="flex items-center gap-3 text-muted-foreground sm:gap-4">
+            <Info size={17} className="hidden sm:block" />
+            <span className="hidden rounded-full border border-border px-2.5 py-1 text-[11.5px] text-muted-foreground lg:inline">
+              View as client
+            </span>
+            <Globe size={17} />
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-foreground text-[11px] font-semibold text-background lg:hidden">
+              {initialsOf(CURRENT_USER.name)}
+            </span>
           </div>
         </header>
+
+        <div className="flex gap-1 overflow-x-auto border-b border-border bg-card px-3 py-2 lg:hidden">
+          {MOBILE_NAV.map((item) => {
+            const active = pathname.startsWith(item.to);
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                  active ? "bg-brand-soft text-brand" : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+
         <div className="min-w-0 flex-1">{children}</div>
       </div>
     </div>
