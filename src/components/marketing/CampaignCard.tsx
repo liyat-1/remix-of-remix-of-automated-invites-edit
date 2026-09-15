@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Ellipsis, FlaskConical, Mail, MessageSquare, Pencil, Power, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -32,6 +33,8 @@ export function CampaignCard({
   onRevert: () => void;
 }) {
   const edit = lastEdit(campaign);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const hasCustomization = Object.values(campaign.variants).some((variant) => variant.customization.text || variant.customization.email);
 
   return (
