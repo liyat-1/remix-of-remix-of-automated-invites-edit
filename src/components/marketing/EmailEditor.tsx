@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Check, LayoutTemplate } from "lucide-react";
+import { LayoutTemplate, Rows3 } from "lucide-react";
 import { TemplateLibrary } from "./TemplateLibrary";
+import { LayoutLibrary, LayoutThumb } from "./LayoutLibrary";
 import { MediaStrip } from "./MediaStrip";
 import { MediaThumb } from "./MediaPicker";
 import {
   LAYOUT_LABEL,
-  LAYOUT_PRESETS,
   normalizeLayout,
   renderPreview,
   useMarketing,
@@ -38,88 +38,19 @@ function Field({
   );
 }
 
-/** Tiny wireframe of a layout, used on the selectable layout cards. */
-function LayoutThumb({ layout, accent }: { layout: EmailLayout; accent: string }) {
-  const band = <div className="rounded-sm" style={{ background: accent, opacity: 0.22, height: 14 }} />;
-  const line = <div className="h-1.5 rounded-sm bg-zinc-200" />;
-  const short = <div className="h-1.5 w-2/3 rounded-sm bg-zinc-200" />;
-  const btn = <div className="h-2.5 w-10 rounded-sm" style={{ background: accent }} />;
-
+/** Tiny wireframe of the chosen template, shown on the template card. */
+function TemplateThumb({ accent }: { accent: string }) {
   return (
-    <div className="flex h-[74px] flex-col gap-1.5 rounded bg-white p-2 shadow-sm">
-      {layout === "hero_top" && (
-        <>
-          {band}
-          {line}
-          {short}
-          {btn}
-        </>
-      )}
-      {layout === "text_only" && (
-        <>
-          <div className="h-2 w-3/4 rounded-sm bg-zinc-300" />
-          {line}
-          {line}
-          {short}
-          {btn}
-        </>
-      )}
-      {layout === "split" && (
-        <>
-          <div className="flex gap-1.5">
-            <div className="w-1/2 rounded-sm" style={{ background: accent, opacity: 0.22, height: 34 }} />
-            <div className="flex w-1/2 flex-col gap-1.5">
-              {line}
-              {line}
-              {short}
-            </div>
-          </div>
-          {btn}
-        </>
-      )}
-      {layout === "full_bleed" && (
-        <div
-          className="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-sm"
-          style={{ background: accent, opacity: 0.22 }}
-        >
-          <div className="h-2 w-2/3 rounded-sm bg-white/80" />
-          <div className="h-2.5 w-10 rounded-sm bg-white" />
-        </div>
-      )}
-      {layout === "gallery_two" && (
-        <>
-          <div className="h-2 w-3/4 rounded-sm bg-zinc-300" />
-          {short}
-          <div className="flex gap-1.5">
-            {[0, 1].map((i) => (
-              <div
-                key={i}
-                className="h-4 flex-1 rounded-sm"
-                style={{ background: accent, opacity: 0.22 }}
-              />
-            ))}
-          </div>
-          {btn}
-        </>
-      )}
-      {layout === "gallery_three" && (
-        <>
-          {band}
-          {short}
-          <div className="flex gap-1">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="h-3.5 flex-1 rounded-sm"
-                style={{ background: accent, opacity: 0.22 }}
-              />
-            ))}
-          </div>
-        </>
-      )}
+    <div className="flex h-[74px] flex-col gap-1.5 overflow-hidden rounded bg-white p-2 shadow-sm">
+      <div className="rounded-sm" style={{ background: accent, opacity: 0.2, height: 18 }} />
+      <div className="h-2 w-3/4 rounded-sm bg-zinc-300" />
+      <div className="h-1.5 rounded-sm bg-zinc-200" />
+      <div className="h-1.5 w-2/3 rounded-sm bg-zinc-200" />
+      <div className="mt-auto h-2.5 w-10 rounded-sm" style={{ background: accent }} />
     </div>
   );
 }
+
 
 function Banner({ item, accent, height }: { item?: MediaItem; accent: string; height: number }) {
   if (item) {
