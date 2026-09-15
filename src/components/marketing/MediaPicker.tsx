@@ -125,7 +125,7 @@ export function MediaPicker({
       id: uid(),
       name: file.name,
       type: file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "document",
-      folder: folders[0] ?? "Uploads",
+      folder: folder ?? folders[0] ?? "Uploads",
       size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
       url: file.type.startsWith("image/") || file.type.startsWith("video/") ? URL.createObjectURL(file) : undefined,
       addedAt: Date.now(),
@@ -135,8 +135,10 @@ export function MediaPicker({
   if (!open) return null;
 
   const pool = media.filter((m) => types.includes(m.type));
+  const query = q.trim().toLowerCase();
   const list = pool
-    .filter((m) => m.name.toLowerCase().includes(q.trim().toLowerCase()));
+    .filter((m) => (folder ? m.folder === folder : true))
+    .filter((m) => m.name.toLowerCase().includes(query));
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/45 p-4 backdrop-blur-[2px]">
