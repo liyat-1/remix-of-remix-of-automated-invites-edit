@@ -115,6 +115,7 @@ export function MediaPicker({
 }) {
   const { media, folders } = useMarketing();
   const [q, setQ] = useState("");
+  const [folder, setFolder] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
