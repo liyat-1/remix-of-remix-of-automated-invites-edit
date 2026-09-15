@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Check, Folder, FolderPlus, Pencil, Search, Trash2, Upload, X } from "lucide-react";
+import { Folder, FolderPlus, Pencil, Search, Trash2, Upload } from "lucide-react";
 import { MarketingShell } from "./MarketingShell";
 import { MediaThumb } from "./MediaPicker";
 import { mutate, uid, useMarketing, type MediaType } from "@/lib/marketing";
