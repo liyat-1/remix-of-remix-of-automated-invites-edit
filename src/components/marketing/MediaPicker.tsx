@@ -215,11 +215,11 @@ export function MediaPicker({
                     if (!multi) onClose();
                   }}
                   aria-pressed={active}
-                  className={`group relative overflow-hidden rounded-lg border bg-card text-left transition-all hover:-translate-y-0.5 hover:shadow-lift ${
+                  className={`group relative flex flex-col overflow-hidden rounded-lg border bg-card text-left transition-all hover:-translate-y-0.5 hover:shadow-lift ${
                     active ? "border-brand ring-2 ring-brand/25" : "border-border hover:border-brand/45"
                   }`}
                 >
-                  <div className="h-32 overflow-hidden bg-muted sm:h-36">
+                  <div className="h-32 shrink-0 overflow-hidden bg-muted sm:h-36">
                     <MediaThumb item={m} />
                   </div>
                   {active && (
