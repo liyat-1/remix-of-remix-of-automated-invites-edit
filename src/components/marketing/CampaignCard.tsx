@@ -1,9 +1,13 @@
 import { Clock, Mail, MessageSquare, Pencil } from "lucide-react";
 import {
-  STRATEGY_LABEL,
+  AUDIENCE_LABEL,
   customizedCount,
+  fullTime,
+  initialsOf,
+  lastEdit,
   renderPreview,
   strategyHasEmail,
+  timeAgo,
   type MarketingCampaign,
 } from "@/lib/marketing";
 
@@ -22,6 +26,7 @@ export function CampaignCard({
 }) {
   const custom = customizedCount(campaign);
   const email = strategyHasEmail(campaign.strategy);
+  const edit = lastEdit(campaign);
 
   return (
     <div
@@ -44,12 +49,27 @@ export function CampaignCard({
             <span className="truncate">{campaign.timing}</span>
           </p>
         </div>
+
+        {edit && (
+          <span className="group relative mt-0.5 shrink-0">
+            <span className="grid size-6 place-items-center rounded-full bg-zinc-900 text-[10px] font-semibold text-white">
+              {initialsOf(edit.by)}
+            </span>
+            <span className="pointer-events-none absolute right-0 top-7 z-10 w-52 rounded-md bg-zinc-900 px-2.5 py-2 text-[11.5px] leading-snug text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+              Edited by {edit.by} · {timeAgo(edit.at)}
+              <span className="mt-0.5 block text-zinc-300">
+                {AUDIENCE_LABEL[edit.audience]} · {fullTime(edit.at)}
+              </span>
+            </span>
+          </span>
+        )}
+
         <button
           role="switch"
           aria-checked={campaign.enabled}
           aria-label={`${campaign.enabled ? "Disable" : "Enable"} ${campaign.name}`}
           onClick={() => onToggle(!campaign.enabled)}
-          className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
+          className={`relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition-colors ${
             campaign.enabled ? "bg-blue-600" : "bg-zinc-200"
           }`}
         >
@@ -74,9 +94,6 @@ export function CampaignCard({
             <Mail size={11} /> Email
           </span>
         )}
-        <span className="rounded bg-zinc-50 px-2 py-1 text-[11px] text-zinc-500 ring-1 ring-inset ring-zinc-200">
-          {STRATEGY_LABEL[campaign.strategy]}
-        </span>
         {custom > 0 && (
           <span className="rounded bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700">
             {custom} customised
