@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutTemplate, Rows3 } from "lucide-react";
+import { ImageIcon, LayoutTemplate, Rows3 } from "lucide-react";
 import { TemplateLibrary } from "./TemplateLibrary";
 import { LayoutLibrary, LayoutThumb } from "./LayoutLibrary";
 import { MediaStrip } from "./MediaStrip";
@@ -83,9 +83,9 @@ export function EmailEditor({
   const accent = template?.accent ?? "#2563eb";
   const layout = normalizeLayout(String(value.layout));
   const ids = value.mediaIds ?? [];
-  const images = ids
+  const visualMedia = ids
     .map((id) => media.find((m) => m.id === id))
-    .filter((m): m is MediaItem => !!m && m.type === "image" && !!m.url);
+    .filter((m): m is MediaItem => !!m && (m.type === "image" || m.type === "video"));
 
   const set = <K extends keyof EmailContent>(k: K, v: EmailContent[K]) => onChange({ ...value, [k]: v });
 
@@ -151,12 +151,18 @@ export function EmailEditor({
             <Field label="Button link" value={value.ctaUrl} onChange={(v) => set("ctaUrl", v)} />
           </div>
 
-          <MediaStrip
-            ids={ids}
-            onChange={(mediaIds) => set("mediaIds", mediaIds)}
-            types={["image"]}
-            label="Images"
-          />
+          <div className="pt-1">
+            <div className="mb-2 flex items-center gap-2 text-muted-foreground">
+              <ImageIcon size={15} />
+              <p className="text-[11px] font-semibold uppercase">Email media</p>
+            </div>
+            <MediaStrip
+              ids={ids}
+              onChange={(mediaIds) => set("mediaIds", mediaIds)}
+              types={["image", "video"]}
+              label="Images & video"
+            />
+          </div>
         </section>
       </div>
 
@@ -172,7 +178,7 @@ export function EmailEditor({
           </div>
 
           {(layout === "hero_top" || layout === "gallery_three") && (
-            <Banner item={images[0]} accent={accent} height={128} />
+             <Banner item={visualMedia[0]} accent={accent} height={128} />
           )}
 
           {layout === "full_bleed" ? (
@@ -196,7 +202,7 @@ export function EmailEditor({
           ) : layout === "split" ? (
             <div className="flex gap-4 px-6 py-6">
               <div className="w-2/5 shrink-0 overflow-hidden rounded">
-                <Banner item={images[0]} accent={accent} height={130} />
+                 <Banner item={visualMedia[0]} accent={accent} height={130} />
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="text-[17px] font-semibold leading-snug text-zinc-900">
@@ -226,7 +232,7 @@ export function EmailEditor({
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   {[0, 1].map((i) => (
                     <div key={i} className="overflow-hidden rounded">
-                      <Banner item={images[i]} accent={accent} height={90} />
+                       <Banner item={visualMedia[i]} accent={accent} height={90} />
                     </div>
                   ))}
                 </div>
@@ -236,7 +242,7 @@ export function EmailEditor({
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   {[0, 1, 2].map((i) => (
                     <div key={i} className="overflow-hidden rounded">
-                      <Banner item={images[i + 1]} accent={accent} height={70} />
+                       <Banner item={visualMedia[i + 1]} accent={accent} height={70} />
                     </div>
                   ))}
                 </div>

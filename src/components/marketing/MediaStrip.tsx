@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ImagePlus, Search, X } from "lucide-react";
+import { Film, ImagePlus, Library, Search, X } from "lucide-react";
 import { MediaPicker, MediaThumb } from "./MediaPicker";
 import { useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
+import { Button } from "@/components/ui/button";
 
 /**
  * Inline media attacher: recently added items and a search box right here,
@@ -35,39 +36,50 @@ export function MediaStrip({
     onChange(ids.includes(m.id) ? ids.filter((x) => x !== m.id) : [...ids, m.id]);
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <span className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">{label}</span>
-        <button
+    <section className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div>
+          <span className="text-[12px] font-semibold text-card-foreground">{label}</span>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">Choose existing assets for this message.</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setLib(true)}
-          className="flex items-center gap-1.5 text-[12.5px] font-medium text-blue-600 hover:text-blue-700"
+          className="shrink-0"
         >
-          <ImagePlus size={14} />
-          Add from library
-        </button>
+          <Library size={14} />
+          Browse library
+        </Button>
       </div>
 
       {attached.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3 border-b border-border bg-muted/35 p-3">
           {attached.map((m) => (
-            <div key={m.id} className="relative w-24 overflow-hidden rounded-md border border-zinc-200">
-              <div className="aspect-[4/3] bg-zinc-50">
+            <div key={m.id} className="relative w-28 overflow-hidden rounded-md border border-border bg-background shadow-sm">
+              <div className="aspect-[16/10] bg-muted">
                 <MediaThumb item={m} />
               </div>
-              <p className="truncate px-1.5 py-1 text-[11px] text-zinc-600">{m.name}</p>
-              <button
+              <div className="flex items-center gap-1.5 px-2 py-1.5">
+                {m.type === "video" ? <Film size={11} className="shrink-0 text-muted-foreground" /> : <ImagePlus size={11} className="shrink-0 text-muted-foreground" />}
+                <p className="truncate text-[11px] font-medium text-foreground">{m.name}</p>
+              </div>
+              <Button
+                variant="secondary"
+                size="icon"
                 onClick={() => onChange(ids.filter((x) => x !== m.id))}
                 aria-label={`Remove ${m.name}`}
-                className="absolute right-1 top-1 grid size-5 place-items-center rounded-full bg-white/90 text-zinc-500 shadow hover:text-zinc-900"
+                className="absolute right-1.5 top-1.5 size-6 rounded-full shadow"
               >
                 <X size={12} />
-              </button>
+              </Button>
             </div>
           ))}
         </div>
       )}
 
-      <div className="relative mt-2.5">
+      <div className="p-3">
+      <div className="relative">
         <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
         <input
           value={q}
@@ -77,16 +89,16 @@ export function MediaStrip({
         />
       </div>
 
-      <p className="mt-2.5 text-[11.5px] uppercase tracking-wide text-zinc-400">
+      <p className="mt-3 text-[11px] font-semibold uppercase text-muted-foreground">
         {query ? "Results" : "Recently added"}
       </p>
-      <div className="mt-1.5 flex gap-2 overflow-x-auto pb-1">
+      <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
         {suggestions.map((m) => (
           <button
             key={m.id}
             onClick={() => toggle(m)}
             title={`Attach ${m.name}`}
-            className="w-20 shrink-0 overflow-hidden rounded-md border border-zinc-200 text-left hover:border-blue-500"
+            className="w-24 shrink-0 overflow-hidden rounded-md border border-border bg-background text-left transition-colors hover:border-ring"
           >
             <div className="aspect-[4/3] bg-zinc-50">
               <MediaThumb item={m} />
@@ -98,6 +110,7 @@ export function MediaStrip({
           <p className="py-3 text-[12.5px] text-zinc-400">Nothing else to show.</p>
         )}
       </div>
+      </div>
 
       <MediaPicker
         open={lib}
@@ -107,6 +120,6 @@ export function MediaStrip({
         onClose={() => setLib(false)}
         onSelect={toggle}
       />
-    </div>
+    </section>
   );
 }
