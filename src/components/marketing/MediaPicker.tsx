@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { X, Image as ImageIcon, Film, FileText, Search, Check, Play, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
+import { mutate, uid, useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
 
 export const TYPE_ICON: Record<MediaType, React.ComponentType<{ size?: number; className?: string }>> = {
   image: ImageIcon,
@@ -115,6 +115,21 @@ export function MediaPicker({
   const { media, folders } = useMarketing();
   const [folder, setFolder] = useState<string>("All");
   const [q, setQ] = useState("");
+  const [dragging, setDragging] = useState(false);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
+  const upload = (files: FileList | null) => {
+    if (!files?.length) return;
+    mutate((draft) => Array.from(files).forEach((file) => draft.media.unshift({
+      id: uid(),
+      name: file.name,
+      type: file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "document",
+      folder: folder === "All" ? folders[0] ?? "Uploads" : folder,
+      size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
+      url: file.type.startsWith("image/") || file.type.startsWith("video/") ? URL.createObjectURL(file) : undefined,
+      addedAt: Date.now(),
+    })));
+  };
 
   if (!open) return null;
 
@@ -148,8 +163,8 @@ export function MediaPicker({
           </Button>
         </div>
 
-        <div className="border-b border-border px-5 py-3">
-          <div className="relative">
+        <div className="flex gap-2 border-b border-border px-5 py-3">
+          <div className="relative flex-1">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               value={q}
@@ -158,6 +173,8 @@ export function MediaPicker({
               className="w-full rounded-md border border-input bg-background py-2 pl-9 pr-3 text-[13px] outline-none transition-shadow focus:border-brand focus:ring-2 focus:ring-brand/20"
             />
           </div>
+          <input ref={fileRef} type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx" className="hidden" onChange={(event) => { upload(event.target.files); event.target.value = ""; }} />
+          <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>Upload</Button>
         </div>
 
         <div className="flex min-h-0 flex-1">
@@ -186,7 +203,7 @@ export function MediaPicker({
             })}
           </aside>
 
-          <div className="grid flex-1 grid-cols-2 content-start gap-3 overflow-y-auto p-5 sm:grid-cols-3">
+          <div onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); upload(event.dataTransfer.files); }} className={`grid flex-1 grid-cols-2 content-start gap-3 overflow-y-auto p-5 transition-colors sm:grid-cols-3 ${dragging ? "bg-brand-soft" : ""}`}>
             {list.map((m) => {
               const active = selectedIds.includes(m.id);
               return (

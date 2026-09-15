@@ -366,9 +366,7 @@ export function CampaignWizard() {
             </label>
             {channel && (
               <span className="hidden shrink-0 items-center gap-1.5 bg-zinc-100 px-2.5 py-1 text-[11px] font-medium text-zinc-600 sm:flex">
-                {channel === "email" ? (
-                  <Mail size={12} />
-                ) : channel === "text" ? (
+                {channel === "text" ? (
                   <MessageSquare size={12} />
                 ) : channel === "both" ? (
                   <Repeat size={12} />
@@ -464,19 +462,11 @@ export function CampaignWizard() {
               <p className="mt-1 text-[12.5px] text-zinc-500">
                 Choose how this campaign reaches your guests. You can change it at any time.
               </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <ChannelCard
-                  active={channel === "email"}
-                  Icon={Mail}
-                  title="Email Only"
-                  body="Rich, branded email to opted-in guests."
-                  onClick={() => setChannel("email")}
-                  onRemove={() => setChannel(null)}
-                />
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
                 <ChannelCard
                   active={channel === "text"}
                   Icon={MessageSquare}
-                  title="Text Only"
+                  title="Text only"
                   body="Short text with a tracked link."
                   onClick={() => setChannel("text")}
                   onRemove={() => setChannel(null)}
@@ -484,15 +474,15 @@ export function CampaignWizard() {
                 <ChannelCard
                   active={channel === "both"}
                   Icon={Repeat}
-                  title="Text + Email Together"
-                  body="Both channels fire in the same step."
+                  title="Text + Email"
+                  body="Send coordinated messages across both channels."
                   onClick={() => setChannel("both")}
                   onRemove={() => setChannel(null)}
                 />
                 <ChannelCard
                   active={channel === "text_fallback"}
                   Icon={Split}
-                  title="Text with Email Fallback"
+                  title="Text with Email fallback"
                   body="Try text first, email guests without a phone."
                   onClick={() => setChannel("text_fallback")}
                   onRemove={() => setChannel(null)}

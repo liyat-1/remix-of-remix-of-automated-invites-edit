@@ -48,6 +48,7 @@ const MOBILE_NAV = [
   { label: "Transactional", to: "/marketing/transactional" },
   { label: "In-property", to: "/marketing/in-property" },
   { label: "Media", to: "/marketing/media" },
+  { label: "Drip", to: "/campaign" },
 ];
 
 /**

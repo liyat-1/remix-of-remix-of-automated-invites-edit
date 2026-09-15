@@ -116,7 +116,7 @@ export function TagTextArea({
         const text = e.clipboardData.getData("text/plain");
         document.execCommand("insertText", false, text);
       }}
-      className="w-full whitespace-pre-wrap break-words rounded-md border border-zinc-200 bg-white px-3.5 py-3 text-[13.5px] leading-[1.55] text-zinc-900 outline-none transition-colors hover:border-zinc-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+      className="w-full max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-zinc-200 bg-white px-3.5 py-3 text-[13.5px] leading-[1.55] text-zinc-900 outline-none transition-colors hover:border-zinc-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
       style={{ minHeight }}
       data-placeholder={placeholder}
     />

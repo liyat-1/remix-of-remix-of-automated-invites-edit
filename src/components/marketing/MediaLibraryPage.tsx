@@ -4,6 +4,7 @@ import { MarketingShell } from "./MarketingShell";
 import { MediaThumb } from "./MediaPicker";
 import { mutate, uid, useMarketing, type MediaType } from "@/lib/marketing";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const TYPES: ("all" | MediaType)[] = ["all", "image", "video", "document"];
 
@@ -57,6 +58,7 @@ export function MediaLibraryPage() {
   const [renamingFolder, setRenamingFolder] = useState<string | null>(null);
   const [renamingItem, setRenamingItem] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const list = media
@@ -117,6 +119,7 @@ export function MediaLibraryPage() {
       d.media = d.media.filter((m) => m.folder !== name);
     });
     setFolder("All");
+    setDeleteTarget(null);
   };
 
   return (
@@ -192,7 +195,7 @@ export function MediaLibraryPage() {
                   <Pencil size={12} />
                 </button>
                 <button
-                  onClick={() => deleteFolder(f)}
+                   onClick={() => setDeleteTarget(f)}
                   aria-label={`Delete folder ${f}`}
                   className="opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
                 >
@@ -377,6 +380,12 @@ export function MediaLibraryPage() {
           </div>
         </div>
       </div>
+      <AlertDialog open={Boolean(deleteTarget)} onOpenChange={(value) => !value && setDeleteTarget(null)}>
+        <AlertDialogContent className="border-border bg-card shadow-float">
+          <AlertDialogHeader><AlertDialogTitle>Delete {deleteTarget}?</AlertDialogTitle><AlertDialogDescription>This folder and every file inside it will be permanently removed.</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => deleteTarget && deleteFolder(deleteTarget)}>Delete folder</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MarketingShell>
   );
 }

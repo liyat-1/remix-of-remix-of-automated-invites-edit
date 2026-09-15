@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { ImageIcon, LayoutTemplate, Rows3 } from "lucide-react";
+import { LayoutTemplate, Rows3 } from "lucide-react";
 import { TemplateLibrary } from "./TemplateLibrary";
 import { LayoutLibrary, LayoutThumb } from "./LayoutLibrary";
-import { MediaStrip } from "./MediaStrip";
 import { MediaThumb } from "./MediaPicker";
 import {
   LAYOUT_LABEL,
@@ -62,13 +61,16 @@ function Banner({ item, photo, height }: { item?: MediaItem; photo: string; heig
 export function EmailEditor({
   value,
   onChange,
+  customized = false,
 }: {
   value: EmailContent;
   onChange: (v: EmailContent) => void;
+  customized?: boolean;
 }) {
   const { templates, media } = useMarketing();
   const [lib, setLib] = useState(false);
   const [layoutLib, setLayoutLib] = useState(false);
+  const [pendingTemplate, setPendingTemplate] = useState<(typeof templates)[number] | null>(null);
   const template = templates.find((t) => t.id === value.templateId) ?? templates[0];
   const accent = template?.accent ?? "#2563eb";
   const layout = normalizeLayout(String(value.layout));
@@ -152,18 +154,6 @@ export function EmailEditor({
             <Field label="Button link" value={value.ctaUrl} onChange={(v) => set("ctaUrl", v)} />
           </div>
 
-          <div className="pt-1">
-            <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-              <ImageIcon size={15} />
-              <p className="text-[11px] font-semibold uppercase">Email media</p>
-            </div>
-            <MediaStrip
-              ids={ids}
-              onChange={(mediaIds) => set("mediaIds", mediaIds)}
-              types={["image", "video"]}
-              label="Images & video"
-            />
-          </div>
         </section>
       </div>
 
@@ -273,7 +263,11 @@ export function EmailEditor({
         open={lib}
         onClose={() => setLib(false)}
         selectedId={value.templateId}
-        onSelect={(t) =>
+        onSelect={(t) => {
+          if (customized) {
+            setPendingTemplate(t);
+            return;
+          }
           onChange({
             ...value,
             templateId: t.id,
@@ -282,8 +276,8 @@ export function EmailEditor({
             heading: t.heading,
             body: t.body,
             ctaLabel: t.ctaLabel,
-          })
-        }
+          });
+        }}
       />
 
       <LayoutLibrary
@@ -292,8 +286,19 @@ export function EmailEditor({
         value={layout}
         accent={accent}
         photo={photo}
+        layouts={template?.layouts}
         onSelect={(l: EmailLayout) => set("layout", l)}
       />
+
+      {pendingTemplate && (
+        <div className="fixed inset-0 z-[90] grid place-items-center bg-foreground/45 p-4">
+          <div className="w-full max-w-md rounded-lg border border-border bg-card p-5 shadow-float">
+            <h3 className="text-[16px] font-semibold text-card-foreground">Change email template?</h3>
+            <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">Your written content will be kept where possible. The new template’s default layout will be applied.</p>
+            <div className="mt-5 flex justify-end gap-2"><button onClick={() => setPendingTemplate(null)} className="rounded-md border border-input px-3 py-2 text-[12.5px] font-medium">Cancel</button><button onClick={() => { onChange({ ...value, templateId: pendingTemplate.id, layout: pendingTemplate.layout }); setPendingTemplate(null); setLib(false); }} className="rounded-md bg-brand px-3 py-2 text-[12.5px] font-semibold text-brand-foreground">Continue</button></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
