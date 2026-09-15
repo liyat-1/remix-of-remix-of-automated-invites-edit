@@ -32,13 +32,13 @@
 
 ## Marketing Messages workflow refinement
 
-- [ ] Replace campaign enable text with card toggles and keep the bulk enable/disable action state-aware
-- [ ] Simplify cards to campaign identity, strategy, updater avatar/date, and primary actions
-- [ ] Restore the compact channel-strategy panel with Select all and capped invite chips per strategy
-- [ ] Rebuild promotion management around invite/audience selection plus staged promotion assignment
-- [ ] Move campaign promotion controls into the Direct/OTA editor sections
-- [ ] Simplify the edit warning and retain the closable editor overlay with unsaved-change protection
-- [ ] Keep media Text-only; polish upload, scrolling, sizing, and remove folder filters from the picker
-- [ ] Expand content-rich template previews and structure-only layout choices without altering content
-- [ ] Add PPTX, CSV, XLSX, and other representative media samples
-- [ ] Polish and verify all marketing pages across desktop and mobile preview sizes
+- [x] Replace campaign enable text with card toggles and keep the bulk enable/disable action state-aware
+- [x] Simplify cards to campaign identity, strategy, updater avatar/date, and primary actions
+- [x] Restore the compact channel-strategy panel with Select all and capped invite chips per strategy
+- [x] Rebuild promotion management around invite/audience selection plus staged promotion assignment
+- [x] Move campaign promotion controls into the Direct/OTA editor sections
+- [x] Simplify the edit warning and retain the closable editor overlay with unsaved-change protection
+- [x] Keep media Text-only; polish upload, scrolling, sizing, and remove folder filters from the picker
+- [x] Expand content-rich template previews and structure-only layout choices without altering content
+- [x] Add PPTX, CSV, XLSX, and other representative media samples
+- [x] Polish and verify all marketing pages across desktop and mobile preview sizes
