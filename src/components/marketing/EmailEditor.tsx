@@ -78,6 +78,7 @@ export function EmailEditor({
 }) {
   const { templates, media } = useMarketing();
   const [lib, setLib] = useState(false);
+  const [layoutLib, setLayoutLib] = useState(false);
   const template = templates.find((t) => t.id === value.templateId) ?? templates[0];
   const accent = template?.accent ?? "#2563eb";
   const layout = normalizeLayout(String(value.layout));
@@ -93,64 +94,44 @@ export function EmailEditor({
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div className="space-y-5">
-        {/* Step 1 — template */}
-        <section>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Step 1</p>
-          <div className="mt-1.5 flex items-center justify-between rounded-md border border-zinc-200 px-3.5 py-3">
-            <div className="min-w-0">
-              <p className="text-[12px] uppercase tracking-wide text-zinc-500">Template</p>
-              <p className="truncate text-[13.5px] font-semibold text-zinc-900">
-                {template?.name ?? "None"}
-              </p>
+        {/* Template and layout, side by side */}
+        <section className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-lg border border-zinc-200 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Template</p>
+            <p className="mt-0.5 truncate text-[13px] font-semibold text-zinc-900">
+              {template?.name ?? "None"}
+            </p>
+            <div className="mt-2 rounded bg-zinc-50 p-1.5">
+              <TemplateThumb accent={accent} />
             </div>
             <button
               onClick={() => setLib(true)}
-              className="flex shrink-0 items-center gap-1.5 rounded-md border border-zinc-200 px-3 py-1.5 text-[12.5px] font-medium text-zinc-700 hover:border-zinc-300"
+              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-zinc-200 py-1.5 text-[12px] font-medium text-zinc-700 hover:border-zinc-300"
             >
-              <LayoutTemplate size={14} className="text-zinc-400" />
-              {template ? "Change" : "Choose"}
+              <LayoutTemplate size={13} className="text-zinc-400" />
+              {template ? "Change template" : "Choose template"}
+            </button>
+          </div>
+
+          <div className="rounded-lg border border-zinc-200 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Layout</p>
+            <p className="mt-0.5 truncate text-[13px] font-semibold text-zinc-900">{LAYOUT_LABEL(layout)}</p>
+            <div className="mt-2 rounded bg-zinc-50 p-1.5">
+              <LayoutThumb layout={layout} accent={accent} />
+            </div>
+            <button
+              onClick={() => setLayoutLib(true)}
+              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-zinc-200 py-1.5 text-[12px] font-medium text-zinc-700 hover:border-zinc-300"
+            >
+              <Rows3 size={13} className="text-zinc-400" />
+              Change layout
             </button>
           </div>
         </section>
 
-        {/* Step 2 — layout */}
-        <section>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Step 2</p>
-          <div className="mt-1.5 flex items-baseline justify-between">
-            <span className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">Layout</span>
-            <span className="text-[11.5px] text-zinc-400">{LAYOUT_LABEL(layout)}</span>
-          </div>
-          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {LAYOUT_PRESETS.map((l) => {
-              const active = layout === l.value;
-              return (
-                <button
-                  key={l.value}
-                  onClick={() => set("layout", l.value)}
-                  title={l.desc}
-                  aria-pressed={active}
-                  className={`relative rounded-lg border p-2 text-left transition-all hover:-translate-y-0.5 ${
-                    active ? "border-blue-600 ring-2 ring-blue-600/20" : "border-zinc-200 hover:border-zinc-300"
-                  }`}
-                >
-                  <div className="rounded bg-zinc-50 p-1.5">
-                    <LayoutThumb layout={l.value} accent={accent} />
-                  </div>
-                  <p className="mt-1.5 truncate text-[11.5px] font-medium text-zinc-700">{l.label}</p>
-                  {active && (
-                    <span className="absolute right-2 top-2 grid size-4 place-items-center rounded-full bg-blue-600 text-white">
-                      <Check size={10} />
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Step 3 — content */}
+        {/* Content */}
         <section className="space-y-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Step 3</p>
+
           <Field label="Subject" value={value.subject} onChange={(v) => set("subject", v)} />
           <Field label="Preheader" value={value.preheader} onChange={(v) => set("preheader", v)} />
           <Field label="Heading" value={value.heading} onChange={(v) => set("heading", v)} />
