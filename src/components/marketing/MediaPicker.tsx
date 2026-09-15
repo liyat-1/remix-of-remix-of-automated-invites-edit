@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { X, Image as ImageIcon, Film, FileText, Search, Check, Play, Upload } from "lucide-react";
+import { X, Image as ImageIcon, Film, FileText, Search, Check, Play, Upload, Folder, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mutate, uid, useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
 
@@ -178,6 +178,32 @@ export function MediaPicker({
         </div>
 
         <div className="flex min-h-0 flex-1">
+          <aside className="hidden w-48 shrink-0 overflow-y-auto border-r border-border bg-secondary/40 p-3 sm:block">
+            <p className="px-2 pb-2 text-[10.5px] font-semibold uppercase tracking-wide text-muted-foreground">Folders</p>
+            <button
+              onClick={() => setFolder(null)}
+              className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] transition-colors ${folder === null ? "bg-brand text-brand-foreground" : "text-card-foreground hover:bg-accent"}`}
+            >
+              <FolderOpen size={14} className="shrink-0" />
+              <span className="truncate">All media</span>
+              <span className="ml-auto text-[10.5px] opacity-70">{pool.length}</span>
+            </button>
+            {folders.map((name) => {
+              const count = pool.filter((m) => m.folder === name).length;
+              const active = folder === name;
+              return (
+                <button
+                  key={name}
+                  onClick={() => setFolder(name)}
+                  className={`mt-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] transition-colors ${active ? "bg-brand text-brand-foreground" : "text-card-foreground hover:bg-accent"}`}
+                >
+                  {active ? <FolderOpen size={14} className="shrink-0" /> : <Folder size={14} className="shrink-0" />}
+                  <span className="truncate">{name}</span>
+                  <span className="ml-auto text-[10.5px] opacity-70">{count}</span>
+                </button>
+              );
+            })}
+          </aside>
           <div onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); upload(event.dataTransfer.files); }} className={`grid min-h-[420px] flex-1 grid-cols-2 content-start gap-3 overflow-y-auto p-5 transition-colors sm:grid-cols-3 md:grid-cols-4 ${dragging ? "bg-brand-soft" : ""}`}>
             {list.map((m) => {
               const active = selectedIds.includes(m.id);
