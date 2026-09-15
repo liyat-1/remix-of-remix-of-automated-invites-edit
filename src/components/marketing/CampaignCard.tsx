@@ -14,12 +14,14 @@ import {
 export function CampaignCard({
   campaign,
   selected,
+  selectable = false,
   onSelect,
   onToggle,
   onEdit,
 }: {
   campaign: MarketingCampaign;
   selected: boolean;
+  selectable?: boolean;
   onSelect: (v: boolean) => void;
   onToggle: (v: boolean) => void;
   onEdit: () => void;
@@ -35,13 +37,15 @@ export function CampaignCard({
       }`}
     >
       <div className="flex items-start gap-3 px-4 pt-4">
-        <input
-          type="checkbox"
-          checked={selected}
-          onChange={(e) => onSelect(e.target.checked)}
-          aria-label={`Select ${campaign.name}`}
-          className="mt-1 size-4 accent-blue-600"
-        />
+        {selectable && (
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={(e) => onSelect(e.target.checked)}
+            aria-label={`Select ${campaign.name}`}
+            className="mt-1 size-4 accent-blue-600"
+          />
+        )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-[14px] font-semibold text-zinc-900">{campaign.name}</p>
           <p className="mt-0.5 flex items-center gap-1.5 text-[12px] text-zinc-500">
@@ -49,20 +53,6 @@ export function CampaignCard({
             <span className="truncate">{campaign.timing}</span>
           </p>
         </div>
-
-        {edit && (
-          <span className="group relative mt-0.5 shrink-0">
-            <span className="grid size-6 place-items-center rounded-full bg-zinc-900 text-[10px] font-semibold text-white">
-              {initialsOf(edit.by)}
-            </span>
-            <span className="pointer-events-none absolute right-0 top-7 z-10 w-52 rounded-md bg-zinc-900 px-2.5 py-2 text-[11.5px] leading-snug text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-              Edited by {edit.by} · {timeAgo(edit.at)}
-              <span className="mt-0.5 block text-zinc-300">
-                {AUDIENCE_LABEL[edit.audience]} · {fullTime(edit.at)}
-              </span>
-            </span>
-          </span>
-        )}
 
         <button
           role="switch"
@@ -97,6 +87,21 @@ export function CampaignCard({
         {custom > 0 && (
           <span className="rounded bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700">
             {custom} customised
+          </span>
+        )}
+
+        {edit && (
+          <span className="group relative ml-auto inline-flex items-center gap-1.5">
+            <span className="grid size-5 shrink-0 place-items-center rounded-full bg-zinc-900 text-[9px] font-semibold text-white">
+              {initialsOf(edit.by)}
+            </span>
+            <span className="text-[11px] text-zinc-500">Updated {timeAgo(edit.at)}</span>
+            <span className="pointer-events-none absolute bottom-7 right-0 z-10 w-56 rounded-md bg-zinc-900 px-2.5 py-2 text-[11.5px] leading-snug text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+              Edited by {edit.by} · {timeAgo(edit.at)}
+              <span className="mt-0.5 block text-zinc-300">
+                {AUDIENCE_LABEL[edit.audience]} · {fullTime(edit.at)}
+              </span>
+            </span>
           </span>
         )}
       </div>
