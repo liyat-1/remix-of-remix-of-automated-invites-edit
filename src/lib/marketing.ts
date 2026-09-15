@@ -1,6 +1,15 @@
 import { useSyncExternalStore } from "react";
 import heroAmalfi from "../assets/hero-amalfi.jpg";
 import heroValley from "../assets/hero-valley.jpg";
+import roomBalcony from "../assets/room-balcony.jpg";
+import poolDusk from "../assets/pool-dusk.jpg";
+import breakfastTerrace from "../assets/breakfast-terrace.jpg";
+import lobbyArrival from "../assets/lobby-arrival.jpg";
+import spaTreatment from "../assets/spa-treatment.jpg";
+import familyPool from "../assets/family-pool.jpg";
+import rooftopBar from "../assets/rooftop-bar.jpg";
+import suiteDetail from "../assets/suite-detail.jpg";
+import courtyard from "../assets/courtyard.jpg";
 
 /* ------------------------------------------------------------------ types */
 
@@ -38,20 +47,47 @@ export type EmailLayout =
   | "gallery_two"
   | "gallery_three";
 
-export const LAYOUT_PRESETS: { value: EmailLayout; label: string; desc: string }[] = [
-  { value: "hero_top", label: "Hero on top", desc: "Large image, then heading, copy and button." },
-  { value: "text_only", label: "Text only", desc: "Copy first, no imagery. Best for short notices." },
-  { value: "split", label: "Split", desc: "Image beside the copy, button underneath." },
-  { value: "full_bleed", label: "Full bleed offer", desc: "Centred offer over a coloured banner." },
+export const LAYOUT_PRESETS: {
+  value: EmailLayout;
+  label: string;
+  desc: string;
+  photo: string;
+}[] = [
+  {
+    value: "hero_top",
+    label: "Hero on top",
+    desc: "Large image, then heading, copy and button.",
+    photo: poolDusk,
+  },
+  {
+    value: "text_only",
+    label: "Text only",
+    desc: "Copy first, no imagery. Best for short notices.",
+    photo: suiteDetail,
+  },
+  {
+    value: "split",
+    label: "Split",
+    desc: "Image beside the copy, button underneath.",
+    photo: breakfastTerrace,
+  },
+  {
+    value: "full_bleed",
+    label: "Full bleed offer",
+    desc: "Centred offer over a full-width photograph.",
+    photo: rooftopBar,
+  },
   {
     value: "gallery_two",
     label: "Two images below",
     desc: "Heading and copy, then two images side by side above the button.",
+    photo: familyPool,
   },
   {
     value: "gallery_three",
     label: "Three card strip",
     desc: "Hero, copy, then a three card strip of highlights.",
+    photo: courtyard,
   },
 ];
 
@@ -77,6 +113,8 @@ export type MediaItem = {
   size: string;
   dims?: string;
   url?: string;
+  /** Still frame shown in place of a video, so the grid reads like a real library. */
+  poster?: string;
   addedAt: number;
 };
 
@@ -86,6 +124,8 @@ export type EmailTemplate = {
   desc: string;
   category: string;
   accent: string;
+  /** Cover photograph shown on the template card and used behind the preview. */
+  hero: string;
   heading: string;
   body: string;
   ctaLabel: string;
@@ -151,6 +191,7 @@ const TEMPLATES: EmailTemplate[] = [
     desc: "A warm welcome message for newly booked guests.",
     category: "Welcome",
     accent: "#2563eb",
+    hero: roomBalcony,
     heading: "Welcome to {{hotel_name}}",
     body: "Your reservation is confirmed. We are already getting everything ready for your arrival on {{checkin_date}}.",
     ctaLabel: "View your booking",
@@ -162,6 +203,7 @@ const TEMPLATES: EmailTemplate[] = [
     desc: "Pre-arrival reminder with check-in details.",
     category: "Pre-arrival",
     accent: "#0f766e",
+    hero: courtyard,
     heading: "Your stay starts soon",
     body: "Check-in opens at 3pm on {{checkin_date}}. Tell us your arrival time and we will have your room ready.",
     ctaLabel: "Plan my arrival",
@@ -173,6 +215,7 @@ const TEMPLATES: EmailTemplate[] = [
     desc: "Upsell rooms, dining and spa during the stay.",
     category: "During stay",
     accent: "#9333ea",
+    hero: spaTreatment,
     heading: "Make it a little more special",
     body: "Late checkout, breakfast in bed or a spa hour — add anything to your room in a couple of taps.",
     ctaLabel: "Browse extras",
@@ -184,6 +227,7 @@ const TEMPLATES: EmailTemplate[] = [
     desc: "Post-stay thank you with a direct booking incentive.",
     category: "Post-stay",
     accent: "#b45309",
+    hero: suiteDetail,
     heading: "Thanks for staying with us",
     body: "It was a pleasure hosting you. Book direct next time and enjoy 15% off plus free late checkout.",
     ctaLabel: "Book your next stay",
@@ -195,6 +239,7 @@ const TEMPLATES: EmailTemplate[] = [
     desc: "Promotional layout built around one strong offer.",
     category: "Promotional",
     accent: "#be123c",
+    hero: rooftopBar,
     heading: "15% off, just for you",
     body: "Your private rate is live for the next 14 days. Direct bookings only — no fees, free cancellation.",
     ctaLabel: "Claim my rate",
@@ -206,6 +251,7 @@ const TEMPLATES: EmailTemplate[] = [
     desc: "Short review request with a single clear action.",
     category: "Review",
     accent: "#111827",
+    hero: lobbyArrival,
     heading: "How did we do, {{first_name}}?",
     body: "A short word about your stay helps us get better and helps other guests choose well.",
     ctaLabel: "Leave a review",
@@ -222,15 +268,27 @@ export const FOLDERS = [
   "Hotel information",
 ];
 
+const DAY = 86_400_000;
+
 const MEDIA: MediaItem[] = [
   { id: "m1", name: "Pool.jpg", type: "image", folder: "Hotel information", size: "1.2 MB", dims: "1600 × 1067", url: heroAmalfi, addedAt: Date.now() - 3600_000 },
   { id: "m2", name: "Lobby.jpg", type: "image", folder: "Hotel information", size: "980 KB", dims: "1440 × 960", url: heroValley, addedAt: Date.now() - 7200_000 },
-  { id: "m3", name: "Suite-terrace.jpg", type: "image", folder: "Promotions", size: "1.6 MB", dims: "2000 × 1333", url: heroAmalfi, addedAt: Date.now() - 86_400_000 },
-  { id: "m4", name: "Welcome.mp4", type: "video", folder: "Just booked", size: "4.8 MB", addedAt: Date.now() - 2 * 86_400_000 },
-  { id: "m5", name: "Arrival-guide.pdf", type: "document", folder: "Before arrival", size: "320 KB", addedAt: Date.now() - 3 * 86_400_000 },
-  { id: "m6", name: "Spa-menu.pdf", type: "document", folder: "During stay", size: "410 KB", addedAt: Date.now() - 4 * 86_400_000 },
-  { id: "m7", name: "Breakfast.jpg", type: "image", folder: "During stay", size: "870 KB", dims: "1280 × 853", url: heroValley, addedAt: Date.now() - 5 * 86_400_000 },
-  { id: "m8", name: "Direct-offer.jpg", type: "image", folder: "Promotions", size: "1.1 MB", dims: "1600 × 900", url: heroAmalfi, addedAt: Date.now() - 6 * 86_400_000 },
+  { id: "m3", name: "Suite-terrace.jpg", type: "image", folder: "Promotions", size: "1.6 MB", dims: "2000 × 1333", url: heroAmalfi, addedAt: Date.now() - DAY },
+  { id: "m4", name: "Welcome.mp4", type: "video", folder: "Just booked", size: "4.8 MB", poster: familyPool, addedAt: Date.now() - 2 * DAY },
+  { id: "m5", name: "Arrival-guide.pdf", type: "document", folder: "Before arrival", size: "320 KB", addedAt: Date.now() - 3 * DAY },
+  { id: "m6", name: "Spa-menu.pdf", type: "document", folder: "During stay", size: "410 KB", addedAt: Date.now() - 4 * DAY },
+  { id: "m7", name: "Breakfast.jpg", type: "image", folder: "During stay", size: "870 KB", dims: "1280 × 853", url: breakfastTerrace, addedAt: Date.now() - 5 * DAY },
+  { id: "m8", name: "Direct-offer.jpg", type: "image", folder: "Promotions", size: "1.1 MB", dims: "1600 × 900", url: rooftopBar, addedAt: Date.now() - 6 * DAY },
+  { id: "m9", name: "Deluxe-sea-room.jpg", type: "image", folder: "Hotel information", size: "1.4 MB", dims: "1600 × 1200", url: roomBalcony, addedAt: Date.now() - 7 * DAY },
+  { id: "m10", name: "Infinity-pool-dusk.jpg", type: "image", folder: "Promotions", size: "1.9 MB", dims: "1600 × 1200", url: poolDusk, addedAt: Date.now() - 8 * DAY },
+  { id: "m11", name: "Front-desk.jpg", type: "image", folder: "Just booked", size: "1.1 MB", dims: "1600 × 1200", url: lobbyArrival, addedAt: Date.now() - 9 * DAY },
+  { id: "m12", name: "Spa-treatment.jpg", type: "image", folder: "During stay", size: "960 KB", dims: "1600 × 1200", url: spaTreatment, addedAt: Date.now() - 10 * DAY },
+  { id: "m13", name: "Family-pool.jpg", type: "image", folder: "Promotions", size: "1.3 MB", dims: "1600 × 1200", url: familyPool, addedAt: Date.now() - 11 * DAY },
+  { id: "m14", name: "Courtyard.jpg", type: "image", folder: "Before arrival", size: "1.5 MB", dims: "1600 × 1200", url: courtyard, addedAt: Date.now() - 12 * DAY },
+  { id: "m15", name: "Bed-detail.jpg", type: "image", folder: "Hotel information", size: "880 KB", dims: "1600 × 1200", url: suiteDetail, addedAt: Date.now() - 13 * DAY },
+  { id: "m16", name: "Terrace-welcome.mp4", type: "video", folder: "Before arrival", size: "6.2 MB", poster: rooftopBar, addedAt: Date.now() - 14 * DAY },
+  { id: "m17", name: "House-rules.pdf", type: "document", folder: "Post-checkout", size: "240 KB", addedAt: Date.now() - 15 * DAY },
+  { id: "m18", name: "Wi-Fi-card.pdf", type: "document", folder: "Hotel information", size: "120 KB", addedAt: Date.now() - 16 * DAY },
 ];
 
 type Seed = {
@@ -287,12 +345,12 @@ function variantFrom(seed: Seed, key: AudienceKey): Variant {
 
 function seedState(): MarketingState {
   return {
-    campaigns: SEEDS.map((s) => ({
+    campaigns: SEEDS.map((s, i) => ({
       id: s.id,
       name: s.name,
       timing: s.timing,
       group: s.group,
-      enabled: false,
+      enabled: i % 5 !== 4,
       strategy: s.strategy ?? "text",
       variants: { direct: variantFrom(s, "direct"), ota: variantFrom(s, "ota") },
     })),
@@ -304,7 +362,7 @@ function seedState(): MarketingState {
 
 /* ------------------------------------------------------------------ store */
 
-const KEY = "directful.marketing.v1";
+const KEY = "directful.marketing.v2";
 let state: MarketingState = seedState();
 let hydrated = false;
 const listeners = new Set<() => void>();

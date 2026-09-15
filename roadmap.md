@@ -9,7 +9,7 @@
 - [x] Add a clear media section to email with image and video support
 - [x] Redesign video thumbnails and polish folder-specific upload areas
 - [x] Verify media polish in the preview at desktop and narrow widths — no console errors
-- [ ] Polish all marketing pages with a cohesive professional visual system
-- [ ] Add varied realistic media assets to the built-in media library
-- [ ] Show real imagery in template and layout selection, matching the email preview
-- [ ] Verify all marketing routes at desktop and mobile widths
+- [x] Polish all marketing pages with a cohesive professional visual system
+- [x] Add varied realistic media assets to the built-in media library
+- [x] Show real imagery in template and layout selection, matching the email preview
+- [x] Verify all marketing routes at desktop and mobile widths

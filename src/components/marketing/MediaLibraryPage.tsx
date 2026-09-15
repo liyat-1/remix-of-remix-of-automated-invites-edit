@@ -44,7 +44,7 @@ function RenameField({
         if (e.key === "Escape") onCancel();
       }}
       onFocus={(e) => e.currentTarget.select()}
-      className={`w-full rounded border border-blue-500 px-1.5 py-0.5 text-[12.5px] outline-none ring-2 ring-blue-500/15 ${className}`}
+      className={`w-full rounded border border-brand bg-background px-1.5 py-0.5 text-[12.5px] text-foreground outline-none ring-2 ring-brand/20 ${className}`}
     />
   );
 }
@@ -124,7 +124,7 @@ export function MediaLibraryPage() {
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row">
         <aside className="w-full shrink-0 lg:w-56">
           <div className="flex items-center justify-between px-1 pb-2">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Folders</p>
+            <p className="text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground">Folders</p>
             <Button
               variant="ghost"
               size="icon"
@@ -139,16 +139,16 @@ export function MediaLibraryPage() {
 
           <button
             onClick={() => setFolder("All")}
-            className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] ${
-              folder === "All" ? "bg-blue-50 font-semibold text-blue-700" : "text-zinc-600 hover:bg-zinc-50"
+            className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12.5px] transition-colors ${
+              folder === "All" ? "bg-brand-soft font-semibold text-brand" : "text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
-            <Folder size={14} className={folder === "All" ? "text-blue-600" : "text-zinc-400"} />
+            <Folder size={14} className={folder === "All" ? "text-brand" : "text-muted-foreground"} />
             <span className="flex-1">All media</span>
-            <span className="text-[10.5px] text-zinc-400">{countIn("All")}</span>
+            <span className="text-[10.5px] tabular-nums text-muted-foreground">{countIn("All")}</span>
           </button>
 
-          <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:block">
+          <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:block">
            {folders.map((f) => {
             const active = folder === f;
             if (renamingFolder === f) {
@@ -175,26 +175,26 @@ export function MediaLibraryPage() {
                       if (m) m.folder = f;
                     });
                 }}
-                className={`group flex items-center gap-2 rounded-md px-2 py-1.5 text-[12.5px] ${
-                  active ? "bg-blue-50 font-semibold text-blue-700" : "text-zinc-600 hover:bg-zinc-50"
+                className={`group flex items-center gap-2 rounded-md px-2 py-1.5 text-[12.5px] transition-colors ${
+                  active ? "bg-brand-soft font-semibold text-brand" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
                 <button onClick={() => setFolder(f)} className="flex min-w-0 flex-1 items-center gap-2 text-left">
-                  <Folder size={14} className={active ? "text-blue-600" : "text-zinc-400"} />
+                  <Folder size={14} className={active ? "text-brand" : "text-muted-foreground"} />
                   <span className="min-w-0 flex-1 truncate">{f}</span>
-                  <span className="text-[10.5px] text-zinc-400">{countIn(f)}</span>
+                  <span className="text-[10.5px] tabular-nums text-muted-foreground">{countIn(f)}</span>
                 </button>
                 <button
                   onClick={() => setRenamingFolder(f)}
                   aria-label={`Rename ${f}`}
-                  className="opacity-0 transition-opacity hover:text-zinc-900 group-hover:opacity-100"
+                  className="opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
                 >
                   <Pencil size={12} />
                 </button>
                 <button
                   onClick={() => deleteFolder(f)}
                   aria-label={`Delete folder ${f}`}
-                  className="opacity-0 transition-opacity hover:text-red-600 group-hover:opacity-100"
+                  className="opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
                 >
                   <Trash2 size={12} />
                 </button>
@@ -217,11 +217,11 @@ export function MediaLibraryPage() {
         <div className="min-w-0 flex-1">
           <header className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-md bg-secondary text-secondary-foreground">
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
                 {folder === "All" ? <FolderOpen size={19} /> : <Folder size={19} />}
               </span>
               <div className="min-w-0">
-                <h2 className="truncate text-[16px] font-semibold text-foreground">{folder === "All" ? "All media" : folder}</h2>
+                <h2 className="truncate text-[16px] font-semibold tracking-tight text-card-foreground">{folder === "All" ? "All media" : folder}</h2>
                 <p className="text-[12px] text-muted-foreground">{countIn(folder)} {countIn(folder) === 1 ? "asset" : "assets"}</p>
               </div>
             </div>
@@ -233,12 +233,12 @@ export function MediaLibraryPage() {
 
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[200px] flex-1">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search media"
-                className="w-full rounded-md border border-zinc-200 bg-white py-2 pl-9 pr-3 text-[13px] outline-none focus:border-blue-600"
+                className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-3 text-[13px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/20"
               />
             </div>
             <input
@@ -253,13 +253,13 @@ export function MediaLibraryPage() {
             />
           </div>
 
-          <div className="mt-3 flex gap-1 rounded-md bg-zinc-100 p-1 text-[12.5px]">
+          <div className="mt-3 flex gap-1 rounded-md bg-muted p-1 text-[12.5px]">
             {TYPES.map((t) => (
               <button
                 key={t}
                 onClick={() => setType(t)}
                 className={`rounded px-3 py-1.5 font-medium capitalize transition-colors ${
-                  type === t ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-800"
+                  type === t ? "bg-card text-card-foreground shadow-card" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t === "all" ? "All files" : `${t}s`}
@@ -278,17 +278,17 @@ export function MediaLibraryPage() {
               setDragging(false);
               upload(e.dataTransfer.files);
             }}
-            className={`mt-4 rounded-lg border p-4 transition-colors sm:p-5 ${
-              dragging ? "border-ring bg-accent" : "border-border bg-card"
+            className={`mt-4 rounded-xl border p-4 transition-colors sm:p-5 ${
+              dragging ? "border-brand bg-brand-soft" : "border-border bg-card shadow-card"
             }`}
           >
             <Button
               type="button"
               variant="outline"
               onClick={() => fileRef.current?.click()}
-              className="mb-5 h-auto w-full justify-start gap-4 whitespace-normal border-dashed bg-muted/40 px-4 py-4 text-left shadow-none hover:border-ring sm:px-5"
+              className="mb-5 h-auto w-full justify-start gap-4 whitespace-normal border-dashed bg-muted/40 px-4 py-4 text-left shadow-none hover:border-brand/60 hover:bg-muted/70 sm:px-5"
             >
-              <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border bg-background text-muted-foreground shadow-sm">
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-border bg-background text-muted-foreground shadow-card">
                 <FileUp size={18} />
               </span>
               <span className="min-w-0 flex-1">
@@ -310,9 +310,9 @@ export function MediaLibraryPage() {
                   key={m.id}
                   draggable
                   onDragStart={(e) => e.dataTransfer.setData("text/media-id", m.id)}
-                  className="group overflow-hidden rounded-md border border-border bg-card shadow-sm transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-ring hover:shadow-md"
+                  className="group overflow-hidden rounded-lg border border-border bg-card shadow-card transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-brand/45 hover:shadow-lift"
                 >
-                  <div className="aspect-[4/3] overflow-hidden bg-zinc-50">
+                  <div className="aspect-[4/3] overflow-hidden bg-muted">
                     <MediaThumb item={m} />
                   </div>
                   <div className="flex items-center gap-2 px-3 py-2.5">
@@ -332,13 +332,13 @@ export function MediaLibraryPage() {
                       ) : (
                         <button
                           onDoubleClick={() => setRenamingItem(m.id)}
-                          className="block w-full truncate text-left text-[12.5px] font-medium text-zinc-800"
+                          className="block w-full truncate text-left text-[12.5px] font-medium text-card-foreground"
                           title="Double-click to rename"
                         >
                           {m.name}
                         </button>
                       )}
-                      <p className="truncate text-[11px] text-zinc-400">
+                      <p className="truncate text-[11px] text-muted-foreground">
                         {m.folder} · {m.size}
                         {m.dims ? ` · ${m.dims}` : ""}
                       </p>
@@ -346,7 +346,7 @@ export function MediaLibraryPage() {
                     <button
                       aria-label={`Rename ${m.name}`}
                       onClick={() => setRenamingItem(m.id)}
-                      className="text-zinc-300 transition-colors hover:text-zinc-700"
+                      className="text-muted-foreground/60 transition-colors hover:text-foreground"
                     >
                       <Pencil size={14} />
                     </button>
@@ -357,7 +357,7 @@ export function MediaLibraryPage() {
                           d.media = d.media.filter((x) => x.id !== m.id);
                         })
                       }
-                      className="text-zinc-300 transition-colors hover:text-red-600"
+                      className="text-muted-foreground/60 transition-colors hover:text-destructive"
                     >
                       <Trash2 size={15} />
                     </button>

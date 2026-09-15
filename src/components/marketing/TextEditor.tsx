@@ -23,7 +23,7 @@ export function TextEditor({
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div>
-        <label className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">Message</label>
+        <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Message</label>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {MERGE_TAGS.map((t) => (
             <button
@@ -46,7 +46,7 @@ export function TextEditor({
             minHeight={150}
           />
         </div>
-        <p className="mt-1.5 text-[11.5px] text-zinc-400">
+        <p className="mt-1.5 text-[11.5px] tabular-nums text-muted-foreground">
           {chars} characters · {Math.max(1, Math.ceil(chars / 160))} segment
           {chars > 160 ? "s" : ""}
         </p>
