@@ -1,12 +1,17 @@
 import { useState } from "react";
-import { LayoutTemplate } from "lucide-react";
+import { Check, LayoutTemplate } from "lucide-react";
 import { TemplateLibrary } from "./TemplateLibrary";
+import { MediaStrip } from "./MediaStrip";
+import { MediaThumb } from "./MediaPicker";
 import {
-  LAYOUTS,
+  LAYOUT_LABEL,
+  LAYOUT_PRESETS,
+  normalizeLayout,
   renderPreview,
   useMarketing,
   type EmailContent,
   type EmailLayout,
+  type MediaItem,
 } from "@/lib/marketing";
 
 function Field({
@@ -33,7 +38,106 @@ function Field({
   );
 }
 
-/** Email channel editor: template, layout, copy and a live desktop preview. */
+/** Tiny wireframe of a layout, used on the selectable layout cards. */
+function LayoutThumb({ layout, accent }: { layout: EmailLayout; accent: string }) {
+  const band = <div className="rounded-sm" style={{ background: accent, opacity: 0.22, height: 14 }} />;
+  const line = <div className="h-1.5 rounded-sm bg-zinc-200" />;
+  const short = <div className="h-1.5 w-2/3 rounded-sm bg-zinc-200" />;
+  const btn = <div className="h-2.5 w-10 rounded-sm" style={{ background: accent }} />;
+
+  return (
+    <div className="flex h-[74px] flex-col gap-1.5 rounded bg-white p-2 shadow-sm">
+      {layout === "hero_top" && (
+        <>
+          {band}
+          {line}
+          {short}
+          {btn}
+        </>
+      )}
+      {layout === "text_only" && (
+        <>
+          <div className="h-2 w-3/4 rounded-sm bg-zinc-300" />
+          {line}
+          {line}
+          {short}
+          {btn}
+        </>
+      )}
+      {layout === "split" && (
+        <>
+          <div className="flex gap-1.5">
+            <div className="w-1/2 rounded-sm" style={{ background: accent, opacity: 0.22, height: 34 }} />
+            <div className="flex w-1/2 flex-col gap-1.5">
+              {line}
+              {line}
+              {short}
+            </div>
+          </div>
+          {btn}
+        </>
+      )}
+      {layout === "full_bleed" && (
+        <div
+          className="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-sm"
+          style={{ background: accent, opacity: 0.22 }}
+        >
+          <div className="h-2 w-2/3 rounded-sm bg-white/80" />
+          <div className="h-2.5 w-10 rounded-sm bg-white" />
+        </div>
+      )}
+      {layout === "gallery_two" && (
+        <>
+          <div className="h-2 w-3/4 rounded-sm bg-zinc-300" />
+          {short}
+          <div className="flex gap-1.5">
+            {[0, 1].map((i) => (
+              <div
+                key={i}
+                className="h-4 flex-1 rounded-sm"
+                style={{ background: accent, opacity: 0.22 }}
+              />
+            ))}
+          </div>
+          {btn}
+        </>
+      )}
+      {layout === "gallery_three" && (
+        <>
+          {band}
+          {short}
+          <div className="flex gap-1">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="h-3.5 flex-1 rounded-sm"
+                style={{ background: accent, opacity: 0.22 }}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Banner({ item, accent, height }: { item?: MediaItem; accent: string; height: number }) {
+  if (item) {
+    return (
+      <div className="overflow-hidden" style={{ height }}>
+        <MediaThumb item={item} />
+      </div>
+    );
+  }
+  return (
+    <div
+      style={{ height, background: `linear-gradient(135deg, ${accent}33, ${accent}0d)` }}
+      aria-hidden
+    />
+  );
+}
+
+/** Email channel editor: template first, then layout, copy, media and preview. */
 export function EmailEditor({
   value,
   onChange,
@@ -41,112 +145,200 @@ export function EmailEditor({
   value: EmailContent;
   onChange: (v: EmailContent) => void;
 }) {
-  const { templates } = useMarketing();
+  const { templates, media } = useMarketing();
   const [lib, setLib] = useState(false);
   const template = templates.find((t) => t.id === value.templateId) ?? templates[0];
+  const accent = template?.accent ?? "#2563eb";
+  const layout = normalizeLayout(String(value.layout));
+  const ids = value.mediaIds ?? [];
+  const images = ids
+    .map((id) => media.find((m) => m.id === id))
+    .filter((m): m is MediaItem => !!m && m.type === "image" && !!m.url);
+
   const set = <K extends keyof EmailContent>(k: K, v: EmailContent[K]) => onChange({ ...value, [k]: v });
+
+  const centred = layout === "full_bleed";
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between rounded-md border border-zinc-200 px-3.5 py-3">
-          <div>
-            <p className="text-[12px] uppercase tracking-wide text-zinc-500">Template</p>
-            <p className="text-[13.5px] font-semibold text-zinc-900">{template?.name ?? "None"}</p>
+      <div className="space-y-5">
+        {/* Step 1 — template */}
+        <section>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Step 1</p>
+          <div className="mt-1.5 flex items-center justify-between rounded-md border border-zinc-200 px-3.5 py-3">
+            <div className="min-w-0">
+              <p className="text-[12px] uppercase tracking-wide text-zinc-500">Template</p>
+              <p className="truncate text-[13.5px] font-semibold text-zinc-900">
+                {template?.name ?? "None"}
+              </p>
+            </div>
+            <button
+              onClick={() => setLib(true)}
+              className="flex shrink-0 items-center gap-1.5 rounded-md border border-zinc-200 px-3 py-1.5 text-[12.5px] font-medium text-zinc-700 hover:border-zinc-300"
+            >
+              <LayoutTemplate size={14} className="text-zinc-400" />
+              {template ? "Change" : "Choose"}
+            </button>
           </div>
-          <button
-            onClick={() => setLib(true)}
-            className="flex items-center gap-1.5 rounded-md border border-zinc-200 px-3 py-1.5 text-[12.5px] font-medium text-zinc-700 hover:border-zinc-300"
-          >
-            <LayoutTemplate size={14} className="text-zinc-400" />
-            Change
-          </button>
-        </div>
+        </section>
 
-        <div>
-          <span className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">Layout</span>
-          <div className="mt-1.5 flex flex-wrap gap-1 rounded-md bg-zinc-100 p-1">
-            {LAYOUTS.map((l) => (
-              <button
-                key={l.value}
-                onClick={() => set("layout", l.value as EmailLayout)}
-                className={`rounded px-2.5 py-1.5 text-[12.5px] font-medium transition-colors ${
-                  value.layout === l.value
-                    ? "bg-white text-zinc-900 shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-800"
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
+        {/* Step 2 — layout */}
+        <section>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Step 2</p>
+          <div className="mt-1.5 flex items-baseline justify-between">
+            <span className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">Layout</span>
+            <span className="text-[11.5px] text-zinc-400">{LAYOUT_LABEL(layout)}</span>
           </div>
-        </div>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {LAYOUT_PRESETS.map((l) => {
+              const active = layout === l.value;
+              return (
+                <button
+                  key={l.value}
+                  onClick={() => set("layout", l.value)}
+                  title={l.desc}
+                  aria-pressed={active}
+                  className={`relative rounded-lg border p-2 text-left transition-all hover:-translate-y-0.5 ${
+                    active ? "border-blue-600 ring-2 ring-blue-600/20" : "border-zinc-200 hover:border-zinc-300"
+                  }`}
+                >
+                  <div className="rounded bg-zinc-50 p-1.5">
+                    <LayoutThumb layout={l.value} accent={accent} />
+                  </div>
+                  <p className="mt-1.5 truncate text-[11.5px] font-medium text-zinc-700">{l.label}</p>
+                  {active && (
+                    <span className="absolute right-2 top-2 grid size-4 place-items-center rounded-full bg-blue-600 text-white">
+                      <Check size={10} />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-        <Field label="Subject" value={value.subject} onChange={(v) => set("subject", v)} />
-        <Field label="Preheader" value={value.preheader} onChange={(v) => set("preheader", v)} />
-        <Field label="Heading" value={value.heading} onChange={(v) => set("heading", v)} />
+        {/* Step 3 — content */}
+        <section className="space-y-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Step 3</p>
+          <Field label="Subject" value={value.subject} onChange={(v) => set("subject", v)} />
+          <Field label="Preheader" value={value.preheader} onChange={(v) => set("preheader", v)} />
+          <Field label="Heading" value={value.heading} onChange={(v) => set("heading", v)} />
 
-        <label className="block">
-          <span className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">Body</span>
-          <textarea
-            value={value.body}
-            onChange={(e) => set("body", e.target.value)}
-            rows={5}
-            className="mt-1.5 w-full rounded-md border border-zinc-200 px-3 py-2 text-[13.5px] leading-relaxed outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+          <label className="block">
+            <span className="text-[12px] font-semibold uppercase tracking-wide text-zinc-500">Body</span>
+            <textarea
+              value={value.body}
+              onChange={(e) => set("body", e.target.value)}
+              rows={5}
+              className="mt-1.5 w-full rounded-md border border-zinc-200 px-3 py-2 text-[13.5px] leading-relaxed outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+            />
+          </label>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Button label" value={value.ctaLabel} onChange={(v) => set("ctaLabel", v)} />
+            <Field label="Button link" value={value.ctaUrl} onChange={(v) => set("ctaUrl", v)} />
+          </div>
+
+          <MediaStrip
+            ids={ids}
+            onChange={(mediaIds) => set("mediaIds", mediaIds)}
+            types={["image"]}
+            label="Images"
           />
-        </label>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Button label" value={value.ctaLabel} onChange={(v) => set("ctaLabel", v)} />
-          <Field label="Button link" value={value.ctaUrl} onChange={(v) => set("ctaUrl", v)} />
-        </div>
+        </section>
       </div>
 
-      <div className="rounded-lg bg-zinc-100 p-5">
-        <p className="mb-3 text-[11.5px] uppercase tracking-wide text-zinc-500">Preview</p>
+      {/* Live preview */}
+      <div className="rounded-lg bg-zinc-100 p-5 lg:sticky lg:top-4 lg:self-start">
+        <p className="mb-3 text-[11.5px] uppercase tracking-wide text-zinc-500">
+          Live preview · {LAYOUT_LABEL(layout)}
+        </p>
         <div className="mx-auto max-w-[460px] overflow-hidden rounded-md bg-white shadow-sm">
           <div className="border-b border-zinc-100 px-5 py-3">
             <p className="text-[13px] font-semibold text-zinc-900">{renderPreview(value.subject)}</p>
             <p className="text-[12px] text-zinc-400">{renderPreview(value.preheader)}</p>
           </div>
-          {value.layout !== "text_first" && (
-            <div
-              className="h-32"
-              style={{
-                background: `linear-gradient(135deg, ${template?.accent ?? "#2563eb"}33, ${
-                  template?.accent ?? "#2563eb"
-                }0d)`,
-              }}
-            />
+
+          {(layout === "hero_top" || layout === "gallery_three") && (
+            <Banner item={images[0]} accent={accent} height={128} />
           )}
-          <div className={`px-6 py-6 ${value.layout === "full_width" ? "text-center" : "text-left"}`}>
-            <h3 className="text-[20px] font-semibold leading-snug text-zinc-900">
-              {renderPreview(value.heading)}
-            </h3>
-            <p className="mt-2.5 whitespace-pre-wrap text-[13.5px] leading-relaxed text-zinc-600">
-              {renderPreview(value.body)}
-            </p>
-            <a
-              href={value.ctaUrl}
-              onClick={(e) => e.preventDefault()}
-              className={`mt-5 inline-block rounded px-5 py-3 text-[13px] font-semibold text-white ${
-                value.layout === "full_width" ? "w-full text-center" : ""
-              }`}
-              style={{ background: template?.accent ?? "#2563eb" }}
+
+          {layout === "full_bleed" ? (
+            <div
+              className="px-6 py-10 text-center"
+              style={{ background: `linear-gradient(135deg, ${accent}2e, ${accent}0d)` }}
             >
-              {value.ctaLabel}
-            </a>
-          </div>
-          {value.layout === "text_first" && (
-            <div
-              className="h-28"
-              style={{
-                background: `linear-gradient(135deg, ${template?.accent ?? "#2563eb"}33, ${
-                  template?.accent ?? "#2563eb"
-                }0d)`,
-              }}
-            />
+              <h3 className="text-[22px] font-semibold leading-snug text-zinc-900">
+                {renderPreview(value.heading)}
+              </h3>
+              <p className="mx-auto mt-2.5 max-w-[320px] whitespace-pre-wrap text-[13.5px] leading-relaxed text-zinc-600">
+                {renderPreview(value.body)}
+              </p>
+              <span
+                className="mt-5 inline-block rounded px-6 py-3 text-[13px] font-semibold text-white"
+                style={{ background: accent }}
+              >
+                {value.ctaLabel}
+              </span>
+            </div>
+          ) : layout === "split" ? (
+            <div className="flex gap-4 px-6 py-6">
+              <div className="w-2/5 shrink-0 overflow-hidden rounded">
+                <Banner item={images[0]} accent={accent} height={130} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[17px] font-semibold leading-snug text-zinc-900">
+                  {renderPreview(value.heading)}
+                </h3>
+                <p className="mt-2 whitespace-pre-wrap text-[13px] leading-relaxed text-zinc-600">
+                  {renderPreview(value.body)}
+                </p>
+                <span
+                  className="mt-4 inline-block rounded px-4 py-2.5 text-[12.5px] font-semibold text-white"
+                  style={{ background: accent }}
+                >
+                  {value.ctaLabel}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className={`px-6 py-6 ${centred ? "text-center" : "text-left"}`}>
+              <h3 className="text-[20px] font-semibold leading-snug text-zinc-900">
+                {renderPreview(value.heading)}
+              </h3>
+              <p className="mt-2.5 whitespace-pre-wrap text-[13.5px] leading-relaxed text-zinc-600">
+                {renderPreview(value.body)}
+              </p>
+
+              {layout === "gallery_two" && (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  {[0, 1].map((i) => (
+                    <div key={i} className="overflow-hidden rounded">
+                      <Banner item={images[i]} accent={accent} height={90} />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {layout === "gallery_three" && (
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="overflow-hidden rounded">
+                      <Banner item={images[i + 1]} accent={accent} height={70} />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <span
+                className="mt-5 inline-block rounded px-5 py-3 text-[13px] font-semibold text-white"
+                style={{ background: accent }}
+              >
+                {value.ctaLabel}
+              </span>
+            </div>
           )}
+
           <div className="border-t border-zinc-100 px-6 py-4 text-[11px] text-zinc-400">
             Holiday Inn New York City – Times Square · Unsubscribe
           </div>

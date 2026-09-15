@@ -6,6 +6,7 @@ import {
   AUDIENCE_LABEL,
   STRATEGIES,
   defaultVariant,
+  editVariant,
   mutate,
   strategyHasEmail,
   useMarketing,
@@ -25,12 +26,7 @@ export function CampaignEditor({ id, onClose }: { id: string; onClose: () => voi
   const emailOn = strategyHasEmail(campaign.strategy);
   const activeChannel = emailOn ? channel : "text";
 
-  const update = (fn: (v: typeof variant) => void) =>
-    mutate((d) => {
-      const c = d.campaigns.find((x) => x.id === id)!;
-      fn(c.variants[audience]);
-      c.variants[audience].customized = true;
-    });
+  const update = (fn: (v: typeof variant) => void) => editVariant(id, audience, fn);
 
   return (
     <div className="fixed inset-0 z-[60] flex flex-col bg-[#f5f6f7]">
