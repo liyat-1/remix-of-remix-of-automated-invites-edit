@@ -282,10 +282,11 @@ export function MediaLibraryPage() {
               dragging ? "border-ring bg-accent" : "border-border bg-card"
             }`}
           >
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => fileRef.current?.click()}
-              className="mb-5 flex w-full items-center gap-4 rounded-md border border-dashed border-border bg-muted/40 px-4 py-4 text-left transition-colors hover:border-ring hover:bg-accent sm:px-5"
+              className="mb-5 h-auto w-full justify-start gap-4 whitespace-normal border-dashed bg-muted/40 px-4 py-4 text-left shadow-none hover:border-ring sm:px-5"
             >
               <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border bg-background text-muted-foreground shadow-sm">
                 <FileUp size={18} />
@@ -301,7 +302,7 @@ export function MediaLibraryPage() {
               <span className="hidden rounded-md border border-border bg-background px-3 py-1.5 text-[11.5px] font-medium text-foreground sm:block">
                 Choose files
               </span>
-            </button>
+            </Button>
 
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {list.map((m) => (
