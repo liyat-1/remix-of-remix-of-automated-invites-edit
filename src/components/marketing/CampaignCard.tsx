@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Ellipsis, FlaskConical, Mail, MessageSquare, Pencil, Power, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -32,6 +33,8 @@ export function CampaignCard({
   onRevert: () => void;
 }) {
   const edit = lastEdit(campaign);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const hasCustomization = Object.values(campaign.variants).some((variant) => variant.customization.text || variant.customization.email);
 
   return (
@@ -62,7 +65,7 @@ export function CampaignCard({
             <span>· Updated {timeAgo(edit.at)}</span>
             <span className="pointer-events-none absolute bottom-7 left-0 z-10 w-56 rounded-md bg-foreground px-2.5 py-2 text-[11px] leading-snug text-background opacity-0 shadow-lift transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
               Edited by {edit.by} · {timeAgo(edit.at)}
-              <span className="mt-0.5 block text-background/70">{AUDIENCE_LABEL[edit.audience]} · {fullTime(edit.at)}</span>
+              <span className="mt-0.5 block text-background/70">{AUDIENCE_LABEL[edit.audience]}{mounted ? ` · ${fullTime(edit.at)}` : ""}</span>
             </span>
           </div>
         )}
