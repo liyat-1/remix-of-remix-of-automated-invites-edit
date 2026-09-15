@@ -38,7 +38,7 @@ export function CampaignCard({
   const hasCustomization = Object.values(campaign.variants).some((variant) => variant.customization.text || variant.customization.email);
 
   return (
-    <article className={`flex min-h-[248px] flex-col overflow-hidden rounded-lg border bg-card shadow-card transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:shadow-lift ${selected ? "border-brand ring-2 ring-brand/20" : "border-border hover:border-brand/40"}`}>
+    <article className={`flex min-h-[188px] flex-col overflow-hidden rounded-lg border bg-card shadow-card transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:shadow-lift ${selected ? "border-brand ring-2 ring-brand/20" : "border-border hover:border-brand/40"}`}>
       <div className="flex items-start gap-3 px-4 pt-4">
         {selectable && (
           <input type="checkbox" checked={selected} onChange={(event) => onSelect(event.target.checked)} aria-label={`Select ${campaign.name}`} className="mt-1 size-4 shrink-0 accent-brand" />
