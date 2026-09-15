@@ -45,7 +45,11 @@ export type EmailLayout =
   | "split"
   | "full_bleed"
   | "gallery_two"
-  | "gallery_three";
+  | "gallery_three"
+  | "image_left"
+  | "image_right"
+  | "headline_first"
+  | "cta_focus";
 
 export const LAYOUT_PRESETS: {
   value: EmailLayout;
@@ -89,6 +93,10 @@ export const LAYOUT_PRESETS: {
     desc: "Hero, copy, then a three card strip of highlights.",
     photo: courtyard,
   },
+  { value: "image_left", label: "Image left", desc: "Image column left, existing copy and action right.", photo: roomBalcony },
+  { value: "image_right", label: "Image right", desc: "Existing copy left with the image anchored right.", photo: spaTreatment },
+  { value: "headline_first", label: "Headline first", desc: "Heading and copy lead before the existing image and action.", photo: lobbyArrival },
+  { value: "cta_focus", label: "Action focus", desc: "A compact structure that gives the existing action more emphasis.", photo: poolDusk },
 ];
 
 export const LAYOUT_LABEL = (v: EmailLayout) =>
@@ -153,6 +161,8 @@ export type Variant = {
   customized: boolean;
   customization: { text: boolean; email: boolean };
   editedBy?: EditStamp;
+  promotionMode: "inherit" | "none" | "custom";
+  promotionId: string | null;
   text: TextContent;
   email: EmailContent;
 };
@@ -167,8 +177,9 @@ export type MarketingCampaign = {
   group: CampaignGroup;
   enabled: boolean;
   strategy: Strategy;
-  promotionMode: "inherit" | "none" | "custom";
-  promotionId: string | null;
+  /** Legacy campaign-wide values retained only for saved-state migration. */
+  promotionMode?: "inherit" | "none" | "custom";
+  promotionId?: string | null;
   variants: Record<AudienceKey, Variant>;
 };
 
@@ -361,6 +372,9 @@ function variantFrom(seed: Seed, key: AudienceKey): Variant {
       text: seed.customized?.includes(key) ?? false,
       email: seed.customized?.includes(key) ?? false,
     },
+    editedBy: seed.customized?.includes(key) ? { by: "Sevket Yilmaz", at: Date.now() - DAY * 2 } : undefined,
+    promotionMode: seed.id === "no-show" ? "none" : "inherit",
+    promotionId: null,
     text: { message: key === "direct" ? seed.direct : seed.ota, mediaIds: [] },
     email: {
       templateId: t.id,
@@ -425,6 +439,8 @@ function migrateCampaign(c: MarketingCampaign): MarketingCampaign {
       ...v,
       customized: v.customized ?? false,
       customization: v.customization ?? { text: v.customized ?? false, email: v.customized ?? false },
+      promotionMode: v.promotionMode ?? c.promotionMode ?? (c.id === "no-show" ? "none" : "inherit"),
+      promotionId: v.promotionId ?? c.promotionId ?? null,
       text: {
         message: v.text?.message ?? "",
         mediaIds: v.text?.mediaIds ?? (legacy.text?.mediaId ? [legacy.text.mediaId] : []),
@@ -440,8 +456,6 @@ function migrateCampaign(c: MarketingCampaign): MarketingCampaign {
   return {
     ...c,
     purpose: c.purpose ?? seed?.purpose ?? "Keep guests informed at the right moment in their journey.",
-    promotionMode: c.promotionMode ?? (c.id === "no-show" ? "none" : "inherit"),
-    promotionId: c.promotionId ?? null,
     variants: { direct: fix(c.variants.direct), ota: fix(c.variants.ota) },
   };
 }
@@ -512,9 +526,10 @@ export function customizedCount(c: MarketingCampaign) {
 }
 
 export function effectivePromotion(state: MarketingState, campaign: MarketingCampaign, audience: AudienceKey) {
-  const id = campaign.promotionMode === "custom"
-    ? campaign.promotionId
-    : campaign.promotionMode === "none"
+  const variant = campaign.variants[audience];
+  const id = variant.promotionMode === "custom"
+    ? variant.promotionId
+    : variant.promotionMode === "none"
       ? null
       : state.globalPromotions[audience];
   return state.promotions.find((promotion) => promotion.id === id) ?? null;
