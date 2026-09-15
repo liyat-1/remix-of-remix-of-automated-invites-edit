@@ -6,6 +6,7 @@ import {
   AUDIENCE_LABEL,
   STRATEGIES,
   defaultVariant,
+  editVariant,
   mutate,
   strategyHasEmail,
   useMarketing,
