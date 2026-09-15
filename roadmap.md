@@ -28,4 +28,4 @@
 - [x] Stage channel-strategy changes in the floating panel, show dynamic strategy groupings, then commit once with Apply
 - [x] Polish the centralized Media area, including safe folder deletion and live folder updates in campaign media pickers
 - [x] Align Drip Campaign with the three supported channel strategies and Directful Marketing Messages branding
-- [ ] Verify every marketing page and critical workflow at desktop and mobile widths
+- [x] Verify every marketing page and critical workflow at desktop and mobile widths

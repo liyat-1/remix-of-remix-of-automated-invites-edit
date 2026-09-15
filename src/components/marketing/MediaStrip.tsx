@@ -40,8 +40,8 @@ export function MediaStrip({
     onChange(ids.includes(m.id) ? ids.filter((x) => x !== m.id) : [...ids, m.id]);
 
   return (
-    <section className="overflow-hidden rounded-xl border border-border bg-card shadow-card">
-      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+    <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div className="min-w-0">
           <span className="text-[12.5px] font-semibold tracking-tight text-card-foreground">{label}</span>
           <p className="mt-0.5 text-[11px] text-muted-foreground">

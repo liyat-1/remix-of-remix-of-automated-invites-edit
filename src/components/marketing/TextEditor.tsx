@@ -21,10 +21,10 @@ export function TextEditor({
   const chars = value.message.length;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div>
+    <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="min-w-0">
         <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Message</label>
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-2 flex max-w-full gap-1.5 overflow-x-auto pb-1 sm:flex-wrap">
           {MERGE_TAGS.map((t) => (
             <button
               key={t.token}
