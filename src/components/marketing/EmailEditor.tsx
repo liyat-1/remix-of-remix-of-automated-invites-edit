@@ -273,6 +273,15 @@ export function EmailEditor({
           })
         }
       />
+
+      <LayoutLibrary
+        open={layoutLib}
+        onClose={() => setLayoutLib(false)}
+        value={layout}
+        accent={accent}
+        onSelect={(l: EmailLayout) => set("layout", l)}
+      />
+
     </div>
   );
 }
