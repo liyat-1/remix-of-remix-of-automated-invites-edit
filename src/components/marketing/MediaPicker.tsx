@@ -17,6 +17,7 @@ const DOC_TONE: Record<string, string> = {
   DOCX: "#2563eb",
   XLS: "#16a34a",
   XLSX: "#16a34a",
+  CSV: "#15803d",
   PPT: "#ea580c",
   PPTX: "#ea580c",
 };
@@ -94,7 +95,7 @@ export function MediaThumb({ item, className = "" }: { item: MediaItem; classNam
 }
 
 /**
- * Modal media browser with a folder sidebar. In multi mode it stays open while
+ * Modal media browser. In multi mode it stays open while
  * you keep picking, so several items can be attached in one visit.
  */
 export function MediaPicker({

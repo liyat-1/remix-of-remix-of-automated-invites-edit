@@ -181,8 +181,8 @@ export function EmailEditor({
                 </span>
               </div>
             </div>
-          ) : layout === "split" ? (
-            <div className="flex gap-4 px-6 py-6">
+          ) : layout === "split" || layout === "image_left" || layout === "image_right" ? (
+            <div className={`flex gap-4 px-6 py-6 ${layout === "image_right" ? "flex-row-reverse" : ""}`}>
               <div className="w-2/5 shrink-0 overflow-hidden rounded">
                 <Banner photo={heroOf(0)} height={132} />
               </div>
@@ -209,6 +209,10 @@ export function EmailEditor({
               <p className="mt-2.5 whitespace-pre-wrap text-[13.5px] leading-relaxed text-muted-foreground">
                 {renderPreview(value.body)}
               </p>
+
+              {layout === "headline_first" && <div className="mt-4 overflow-hidden rounded"><Banner photo={heroOf(0)} height={120} /></div>}
+
+              {layout === "cta_focus" && <div className="mt-4 overflow-hidden rounded"><Banner photo={heroOf(0)} height={88} /></div>}
 
               {layout === "gallery_two" && (
                 <div className="mt-4 grid grid-cols-2 gap-2">

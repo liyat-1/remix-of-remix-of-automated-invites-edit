@@ -151,7 +151,6 @@ export type EmailContent = {
   body: string;
   ctaLabel: string;
   ctaUrl: string;
-  mediaIds: string[];
 };
 
 /** Who touched a variant last, so the UI can show a small edit log. */
@@ -288,6 +287,45 @@ const TEMPLATES: EmailTemplate[] = [
     layout: "text_only",
     layouts: ["text_only", "hero_top", "split"],
   },
+  {
+    id: "city-guide",
+    name: "A Local Welcome",
+    desc: "A visual city guide for guests preparing to arrive.",
+    category: "Pre-arrival",
+    accent: "#0369a1",
+    hero: heroValley,
+    heading: "Your local guide is ready",
+    body: "Discover our favourite places to eat, wander and unwind before your stay begins.",
+    ctaLabel: "Explore the guide",
+    layout: "image_left",
+    layouts: ["image_left", "image_right", "hero_top", "headline_first"],
+  },
+  {
+    id: "dining",
+    name: "Dinner on the Terrace",
+    desc: "A refined dining invitation with one clear reservation action.",
+    category: "During stay",
+    accent: "#0f766e",
+    hero: breakfastTerrace,
+    heading: "A table is waiting",
+    body: "Join us on the terrace tonight for seasonal plates, local wines and a view worth lingering over.",
+    ctaLabel: "Reserve a table",
+    layout: "image_right",
+    layouts: ["image_right", "split", "cta_focus", "full_bleed"],
+  },
+  {
+    id: "weekend-return",
+    name: "Your Next Weekend Away",
+    desc: "A calm return-stay invitation for past guests.",
+    category: "Promotional",
+    accent: "#1d4ed8",
+    hero: heroAmalfi,
+    heading: "Come back for the weekend",
+    body: "Your preferred guest rate includes breakfast and a later checkout when you book direct.",
+    ctaLabel: "See available dates",
+    layout: "headline_first",
+    layouts: ["headline_first", "hero_top", "cta_focus", "gallery_two"],
+  },
 ];
 
 export const FOLDERS = [
@@ -320,6 +358,10 @@ const MEDIA: MediaItem[] = [
   { id: "m16", name: "Terrace-welcome.mp4", type: "video", folder: "Before arrival", size: "6.2 MB", poster: rooftopBar, addedAt: Date.now() - 14 * DAY },
   { id: "m17", name: "House-rules.pdf", type: "document", folder: "Post-checkout", size: "240 KB", addedAt: Date.now() - 15 * DAY },
   { id: "m18", name: "Wi-Fi-card.pdf", type: "document", folder: "Hotel information", size: "120 KB", addedAt: Date.now() - 16 * DAY },
+  { id: "m19", name: "Wedding-packages.pptx", type: "document", folder: "Promotions", size: "2.8 MB", addedAt: Date.now() - 17 * DAY },
+  { id: "m20", name: "Seasonal-rates.xlsx", type: "document", folder: "Promotions", size: "186 KB", addedAt: Date.now() - 18 * DAY },
+  { id: "m21", name: "Guest-arrivals.csv", type: "document", folder: "Before arrival", size: "84 KB", addedAt: Date.now() - 19 * DAY },
+  { id: "m22", name: "Conference-guide.docx", type: "document", folder: "Hotel information", size: "540 KB", addedAt: Date.now() - 20 * DAY },
 ];
 
 type Seed = {
@@ -385,7 +427,6 @@ function variantFrom(seed: Seed, key: AudienceKey): Variant {
       body: t.body,
       ctaLabel: t.ctaLabel,
       ctaUrl: "https://directful.com/book",
-      mediaIds: [],
     },
   };
 }
@@ -448,7 +489,6 @@ function migrateCampaign(c: MarketingCampaign): MarketingCampaign {
       email: {
         ...v.email,
         layout: normalizeLayout(String(v.email?.layout ?? "hero_top")),
-        mediaIds: v.email?.mediaIds ?? [],
       },
     };
   };

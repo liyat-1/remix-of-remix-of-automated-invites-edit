@@ -78,7 +78,7 @@ export function TemplateLibrary({
           </div>
         </div>
 
-        <div className="grid flex-1 gap-4 overflow-y-auto p-5 sm:grid-cols-3">
+        <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto p-5 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((t) => {
             const active = t.id === selectedId;
             return (
@@ -93,16 +93,11 @@ export function TemplateLibrary({
                   active ? "border-brand ring-2 ring-brand/25" : "border-border hover:border-brand/45"
                 }`}
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                  <img
-                    src={t.hero}
-                    alt={`${t.name} cover photograph`}
-                    loading="lazy"
-                    width={1024}
-                    height={768}
-                    className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 h-1" style={{ background: t.accent }} />
+                <div className="relative h-52 overflow-hidden bg-muted p-3">
+                  <div className="mx-auto h-full max-w-52 overflow-hidden rounded-sm bg-background shadow-card ring-1 ring-border/70">
+                    <img src={t.hero} alt={`${t.name} email preview`} loading="lazy" width={480} height={200} className="h-20 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+                    <div className="space-y-1.5 px-3 py-2.5"><div className="line-clamp-1 text-[8px] font-semibold text-card-foreground">{t.heading}</div><div className="line-clamp-2 text-[6.5px] leading-relaxed text-muted-foreground">{t.body}</div><span className="mt-1.5 inline-block rounded-sm px-2 py-1 text-[6px] font-semibold text-brand-foreground" style={{ background: t.accent }}>{t.ctaLabel}</span></div>
+                  </div>
                   <span className="absolute left-2 top-2 rounded-full bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground shadow-sm backdrop-blur">
                     {t.category}
                   </span>
