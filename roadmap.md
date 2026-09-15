@@ -16,16 +16,16 @@
 
 ## Marketing Messages product model and polish
 
-- [ ] Reframe campaign pages under Marketing Messages with section navigation, Copy from, and compact complimentary-text banner
-- [ ] Add global guest-type promotions with campaign-level overrides and a searchable promotion selector
-- [ ] Add global and campaign-level revert confirmations with the requested scope guarantees
-- [ ] Rebuild campaign cards around purpose, strategy, per-channel customization, promotion, Test, Edit content, and overflow actions
-- [ ] Add the contextual Edit automated content confirmation before opening each campaign editor
-- [ ] Convert the campaign editor to explicit draft/save behavior with unsaved-change protection and active-campaign save confirmation
-- [ ] Keep Direct/OTA and Text/Email content independent, with channel-level Default/Customized status
-- [ ] Restrict media attachments to Text and retain searchable folders plus in-editor upload/drop
-- [ ] Preserve content through layout changes and protect customized content during template changes
-- [ ] Stage channel-strategy changes in the floating panel, show dynamic strategy groupings, then commit once with Apply
-- [ ] Polish the centralized Media area, including safe folder deletion and live folder updates in campaign media pickers
-- [ ] Align Drip Campaign with the three supported channel strategies and Directful Marketing Messages branding
+- [x] Reframe campaign pages under Marketing Messages with section navigation, Copy from, and compact complimentary-text banner
+- [x] Add global guest-type promotions with campaign-level overrides and a searchable promotion selector
+- [x] Add global and campaign-level revert confirmations with the requested scope guarantees
+- [x] Rebuild campaign cards around purpose, strategy, per-channel customization, promotion, Test, Edit content, and overflow actions
+- [x] Add the contextual Edit automated content confirmation before opening each campaign editor
+- [x] Convert the campaign editor to explicit draft/save behavior with unsaved-change protection and active-campaign save confirmation
+- [x] Keep Direct/OTA and Text/Email content independent, with channel-level Default/Customized status
+- [x] Restrict media attachments to Text and retain searchable folders plus in-editor upload/drop
+- [x] Preserve content through layout changes and protect customized content during template changes
+- [x] Stage channel-strategy changes in the floating panel, show dynamic strategy groupings, then commit once with Apply
+- [x] Polish the centralized Media area, including safe folder deletion and live folder updates in campaign media pickers
+- [x] Align Drip Campaign with the three supported channel strategies and Directful Marketing Messages branding
 - [ ] Verify every marketing page and critical workflow at desktop and mobile widths

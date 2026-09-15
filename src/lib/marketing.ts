@@ -130,6 +130,7 @@ export type EmailTemplate = {
   body: string;
   ctaLabel: string;
   layout: EmailLayout;
+  layouts: EmailLayout[];
 };
 
 export type TextContent = { message: string; mediaIds: string[] };
@@ -150,6 +151,7 @@ export type EditStamp = { by: string; at: number };
 
 export type Variant = {
   customized: boolean;
+  customization: { text: boolean; email: boolean };
   editedBy?: EditStamp;
   text: TextContent;
   email: EmailContent;
@@ -161,10 +163,20 @@ export type MarketingCampaign = {
   id: string;
   name: string;
   timing: string;
+  purpose: string;
   group: CampaignGroup;
   enabled: boolean;
   strategy: Strategy;
+  promotionMode: "inherit" | "none" | "custom";
+  promotionId: string | null;
   variants: Record<AudienceKey, Variant>;
+};
+
+export type Promotion = {
+  id: string;
+  name: string;
+  detail: string;
+  code: string;
 };
 
 export type MarketingState = {
@@ -172,6 +184,8 @@ export type MarketingState = {
   media: MediaItem[];
   folders: string[];
   templates: EmailTemplate[];
+  promotions: Promotion[];
+  globalPromotions: Record<AudienceKey, string | null>;
 };
 
 /* ------------------------------------------------------------------- seed */
@@ -196,6 +210,7 @@ const TEMPLATES: EmailTemplate[] = [
     body: "Your reservation is confirmed. We are already getting everything ready for your arrival on {{checkin_date}}.",
     ctaLabel: "View your booking",
     layout: "hero_top",
+    layouts: ["hero_top", "split", "gallery_two"],
   },
   {
     id: "soon",
@@ -208,6 +223,7 @@ const TEMPLATES: EmailTemplate[] = [
     body: "Check-in opens at 3pm on {{checkin_date}}. Tell us your arrival time and we will have your room ready.",
     ctaLabel: "Plan my arrival",
     layout: "text_only",
+    layouts: ["text_only", "hero_top", "split"],
   },
   {
     id: "enhance",
@@ -220,6 +236,7 @@ const TEMPLATES: EmailTemplate[] = [
     body: "Late checkout, breakfast in bed or a spa hour — add anything to your room in a couple of taps.",
     ctaLabel: "Browse extras",
     layout: "split",
+    layouts: ["split", "gallery_two", "gallery_three"],
   },
   {
     id: "thanks",
@@ -232,6 +249,7 @@ const TEMPLATES: EmailTemplate[] = [
     body: "It was a pleasure hosting you. Book direct next time and enjoy 15% off plus free late checkout.",
     ctaLabel: "Book your next stay",
     layout: "hero_top",
+    layouts: ["hero_top", "text_only", "gallery_two"],
   },
   {
     id: "offer",
@@ -244,6 +262,7 @@ const TEMPLATES: EmailTemplate[] = [
     body: "Your private rate is live for the next 14 days. Direct bookings only — no fees, free cancellation.",
     ctaLabel: "Claim my rate",
     layout: "gallery_two",
+    layouts: ["gallery_two", "full_bleed", "gallery_three"],
   },
   {
     id: "review",
@@ -256,6 +275,7 @@ const TEMPLATES: EmailTemplate[] = [
     body: "A short word about your stay helps us get better and helps other guests choose well.",
     ctaLabel: "Leave a review",
     layout: "text_only",
+    layouts: ["text_only", "hero_top", "split"],
   },
 ];
 
@@ -295,6 +315,7 @@ type Seed = {
   id: string;
   name: string;
   timing: string;
+  purpose: string;
   group: CampaignGroup;
   template: string;
   direct: string;
@@ -304,30 +325,42 @@ type Seed = {
 };
 
 const SEEDS: Seed[] = [
-  { id: "just-booked", name: "Just booked", timing: "Immediately after booking", group: "invites", template: "welcome", strategy: "text_email", customized: ["direct"], direct: "Hi {{first_name}}, thanks for booking directly with {{hotel_name}}. Your best rate is locked in — see you on {{checkin_date}}.", ota: "Hi {{first_name}}, your reservation at {{hotel_name}} is confirmed for {{checkin_date}}. We are looking forward to welcoming you." },
-  { id: "before-arrival", name: "Before arrival", timing: "1 day before check-in", group: "invites", template: "soon", strategy: "text_email", direct: "Hi {{first_name}}, your stay at {{hotel_name}} starts tomorrow. Reply with your arrival time and we will have everything ready.", ota: "Hi {{first_name}}, check-in at {{hotel_name}} opens tomorrow at 3pm. Anything we can prepare for you?" },
-  { id: "during-stay", name: "During stay", timing: "Morning after check-in", group: "invites", template: "enhance", direct: "Good morning {{first_name}} — breakfast runs until 10:30 and late checkout is on us if you would like it.", ota: "Good morning {{first_name}} — breakfast runs until 10:30. Ask us anything, we are one text away." },
-  { id: "post-checkout", name: "Post-checkout", timing: "1 day after checkout", group: "invites", template: "thanks", strategy: "text_fallback", customized: ["ota"], direct: "Thanks for staying with us, {{first_name}}. Your direct guest rate is waiting whenever you are: {{booking_link}}", ota: "Thanks for staying with us, {{first_name}}. Book direct next time for 15% off: {{booking_link}}" },
-  { id: "after-last-visit", name: "After last visit", timing: "15 days – 3 months since last visit", group: "invites", template: "offer", direct: "Hi {{first_name}}, it has been a while. Your direct rate at {{hotel_name}} is still the best one going.", ota: "Hi {{first_name}}, ready for another stay at {{hotel_name}}? Book direct and skip the fees." },
-  { id: "lost-3", name: "Lost 3 months", timing: "3 months since guest's last stay", group: "invites", template: "offer", direct: "Three months already, {{first_name}}. Here is 10% off your next direct booking.", ota: "Three months already, {{first_name}}. Here is 10% off when you book with us directly." },
-  { id: "lost-6", name: "Lost 6 months", timing: "6 months since guest's last stay", group: "invites", template: "offer", direct: "We miss you, {{first_name}}. 12% off your next stay at {{hotel_name}}.", ota: "We miss you, {{first_name}}. 12% off when you book direct at {{hotel_name}}." },
-  { id: "lost-9", name: "Lost 9 months", timing: "9 months since guest's last stay", group: "invites", template: "offer", direct: "{{first_name}}, your room is still here. 15% off direct bookings this month.", ota: "{{first_name}}, come back to {{hotel_name}} — 15% off direct bookings this month." },
-  { id: "lost-12", name: "Lost 12 months", timing: "12 months since guest's last stay", group: "invites", template: "offer", direct: "A year since your last stay, {{first_name}}. Let's fix that — 15% off direct.", ota: "A year since your last stay, {{first_name}}. Book direct and save 15%." },
-  { id: "lost-15", name: "Lost 15 months", timing: "15 months since guest's last stay", group: "invites", template: "offer", direct: "{{first_name}}, here is our best direct offer of the year.", ota: "{{first_name}}, here is our best direct offer of the year." },
-  { id: "lost-15-plus", name: "Lost 15 months plus", timing: "More than 15 months since last stay", group: "invites", template: "offer", direct: "It has been a long time, {{first_name}}. 20% off to welcome you back.", ota: "It has been a long time, {{first_name}}. 20% off to welcome you back." },
+  { id: "just-booked", name: "Just booked", timing: "Immediately after booking", purpose: "Welcome guests, reassure them, and share useful reservation next steps.", group: "invites", template: "welcome", strategy: "text_email", customized: ["direct"], direct: "Hi {{first_name}}, thanks for booking directly with {{hotel_name}}. Your best rate is locked in — see you on {{checkin_date}}.", ota: "Hi {{first_name}}, your reservation at {{hotel_name}} is confirmed for {{checkin_date}}. We are looking forward to welcoming you." },
+  { id: "before-arrival", name: "Before arrival", timing: "1 day before check-in", purpose: "Help guests prepare with arrival details, services, and relevant offers.", group: "invites", template: "soon", strategy: "text_email", direct: "Hi {{first_name}}, your stay at {{hotel_name}} starts tomorrow. Reply with your arrival time and we will have everything ready.", ota: "Hi {{first_name}}, check-in at {{hotel_name}} opens tomorrow at 3pm. Anything we can prepare for you?" },
+  { id: "during-stay", name: "During stay", timing: "Morning after check-in", purpose: "Connect guests with amenities, dining, services, and experiences.", group: "invites", template: "enhance", direct: "Good morning {{first_name}} — breakfast runs until 10:30 and late checkout is on us if you would like it.", ota: "Good morning {{first_name}} — breakfast runs until 10:30. Ask us anything, we are one text away." },
+  { id: "post-checkout", name: "Post-checkout", timing: "1 day after checkout", purpose: "Thank guests, invite feedback, and keep the relationship warm.", group: "invites", template: "thanks", strategy: "text_fallback", customized: ["ota"], direct: "Thanks for staying with us, {{first_name}}. Your direct guest rate is waiting whenever you are: {{booking_link}}", ota: "Thanks for staying with us, {{first_name}}. Book direct next time for 15% off: {{booking_link}}" },
+  { id: "after-last-visit", name: "After last visit", timing: "15 days – 3 months since last visit", purpose: "Reconnect while the stay is still recent and encourage a return.", group: "invites", template: "offer", direct: "Hi {{first_name}}, it has been a while. Your direct rate at {{hotel_name}} is still the best one going.", ota: "Hi {{first_name}}, ready for another stay at {{hotel_name}}? Book direct and skip the fees." },
+  { id: "lost-3", name: "Lost 3 months", timing: "3 months since guest's last stay", purpose: "A timely reminder of the experience and benefits of returning direct.", group: "invites", template: "offer", direct: "Three months already, {{first_name}}. Here is 10% off your next direct booking.", ota: "Three months already, {{first_name}}. Here is 10% off when you book with us directly." },
+  { id: "lost-6", name: "Lost 6 months", timing: "6 months since guest's last stay", purpose: "Re-engage with a meaningful reason to plan another stay.", group: "invites", template: "offer", direct: "We miss you, {{first_name}}. 12% off your next stay at {{hotel_name}}.", ota: "We miss you, {{first_name}}. 12% off when you book direct at {{hotel_name}}." },
+  { id: "lost-9", name: "Lost 9 months", timing: "9 months since guest's last stay", purpose: "Bring the property back to mind with a stronger return invitation.", group: "invites", template: "offer", direct: "{{first_name}}, your room is still here. 15% off direct bookings this month.", ota: "{{first_name}}, come back to {{hotel_name}} — 15% off direct bookings this month." },
+  { id: "lost-12", name: "Lost 12 months", timing: "12 months since guest's last stay", purpose: "Mark the anniversary with a warm, personal invitation to return.", group: "invites", template: "offer", direct: "A year since your last stay, {{first_name}}. Let's fix that — 15% off direct.", ota: "A year since your last stay, {{first_name}}. Book direct and save 15%." },
+  { id: "lost-15", name: "Lost 15 months", timing: "15 months since guest's last stay", purpose: "Win back lapsed guests with the property's strongest direct value.", group: "invites", template: "offer", direct: "{{first_name}}, here is our best direct offer of the year.", ota: "{{first_name}}, here is our best direct offer of the year." },
+  { id: "lost-15-plus", name: "Lost 15 months plus", timing: "More than 15 months since last stay", purpose: "Reintroduce the hotel and make returning feel especially worthwhile.", group: "invites", template: "offer", direct: "It has been a long time, {{first_name}}. 20% off to welcome you back.", ota: "It has been a long time, {{first_name}}. 20% off to welcome you back." },
 
-  { id: "cancelled", name: "Cancelled", timing: "When a guest cancels their booking", group: "transactional", template: "thanks", strategy: "text", direct: "Sorry to see the change of plans, {{first_name}}. Your direct rate will be here when you rebook.", ota: "Sorry to see the change of plans, {{first_name}}. We hope to host you another time." },
-  { id: "no-show", name: "No show", timing: "When a guest doesn't show up", group: "transactional", template: "thanks", strategy: "text", direct: "We missed you, {{first_name}}. Let us know if you would like to rebook.", ota: "We missed you, {{first_name}}. Let us know if you would like to rebook." },
-  { id: "review", name: "Review", timing: "After the stay, review request", group: "transactional", template: "review", strategy: "text_email", direct: "How was your stay at {{hotel_name}}, {{first_name}}? A quick word means a lot.", ota: "How was your stay at {{hotel_name}}, {{first_name}}? A quick word means a lot." },
+  { id: "cancelled", name: "Cancelled", timing: "When a guest cancels their booking", purpose: "Acknowledge the change of plans and leave the door open to rebook.", group: "transactional", template: "thanks", strategy: "text", direct: "Sorry to see the change of plans, {{first_name}}. Your direct rate will be here when you rebook.", ota: "Sorry to see the change of plans, {{first_name}}. We hope to host you another time." },
+  { id: "no-show", name: "No show", timing: "When a guest doesn't show up", purpose: "Check in sensitively after a missed arrival without forcing an offer.", group: "transactional", template: "thanks", strategy: "text", direct: "We missed you, {{first_name}}. Let us know if you would like to rebook.", ota: "We missed you, {{first_name}}. Let us know if you would like to rebook." },
+  { id: "review", name: "Review", timing: "After the stay, review request", purpose: "Thank guests and ask for concise, useful feedback about their stay.", group: "transactional", template: "review", strategy: "text_email", direct: "How was your stay at {{hotel_name}}, {{first_name}}? A quick word means a lot.", ota: "How was your stay at {{hotel_name}}, {{first_name}}? A quick word means a lot." },
 
-  { id: "day-before-checkin", name: "Day before check-in", timing: "Stay reminder for booked guests", group: "in_property", template: "soon", strategy: "text", direct: "See you tomorrow, {{first_name}}. Check-in from 3pm at {{hotel_name}}.", ota: "See you tomorrow, {{first_name}}. Check-in from 3pm at {{hotel_name}}." },
-  { id: "after-checkin", name: "After check-in", timing: "Welcome message after check-in", group: "in_property", template: "welcome", strategy: "text", direct: "Welcome in, {{first_name}}. Anything you need, just reply to this message.", ota: "Welcome in, {{first_name}}. Anything you need, just reply to this message." },
+  { id: "day-before-checkin", name: "Day before check-in", timing: "Stay reminder for booked guests", purpose: "Share timely arrival details and reduce uncertainty before check-in.", group: "in_property", template: "soon", strategy: "text", direct: "See you tomorrow, {{first_name}}. Check-in from 3pm at {{hotel_name}}.", ota: "See you tomorrow, {{first_name}}. Check-in from 3pm at {{hotel_name}}." },
+  { id: "after-checkin", name: "After check-in", timing: "Welcome message after check-in", purpose: "Welcome guests on property and make help easy to access.", group: "in_property", template: "welcome", strategy: "text", direct: "Welcome in, {{first_name}}. Anything you need, just reply to this message.", ota: "Welcome in, {{first_name}}. Anything you need, just reply to this message." },
+];
+
+const PROMOTIONS: Promotion[] = [
+  { id: "dining-10", name: "10% off dining", detail: "Save 10% at the hotel restaurant during this stay.", code: "DINE10" },
+  { id: "return-15", name: "15% off next stay", detail: "A direct-booking incentive for a future visit.", code: "RETURN15" },
+  { id: "return-20", name: "20% off next stay", detail: "A stronger win-back offer for lapsed guests.", code: "WELCOME20" },
+  { id: "spa-15", name: "15% off spa", detail: "Save on one spa treatment booked during the stay.", code: "SPA15" },
+  { id: "late-checkout", name: "Complimentary late checkout", detail: "Extend checkout to 2pm, subject to availability.", code: "STAYLATE" },
 ];
 
 function variantFrom(seed: Seed, key: AudienceKey): Variant {
   const t = TEMPLATES.find((x) => x.id === seed.template) ?? TEMPLATES[0];
   return {
     customized: seed.customized?.includes(key) ?? false,
+    customization: {
+      text: seed.customized?.includes(key) ?? false,
+      email: seed.customized?.includes(key) ?? false,
+    },
     text: { message: key === "direct" ? seed.direct : seed.ota, mediaIds: [] },
     email: {
       templateId: t.id,
@@ -349,14 +382,19 @@ function seedState(): MarketingState {
       id: s.id,
       name: s.name,
       timing: s.timing,
+      purpose: s.purpose,
       group: s.group,
       enabled: i % 5 !== 4,
       strategy: s.strategy ?? "text",
+      promotionMode: s.id === "no-show" ? "none" : "inherit",
+      promotionId: null,
       variants: { direct: variantFrom(s, "direct"), ota: variantFrom(s, "ota") },
     })),
     media: MEDIA,
     folders: FOLDERS,
     templates: TEMPLATES,
+    promotions: PROMOTIONS,
+    globalPromotions: { direct: "dining-10", ota: null },
   };
 }
 
@@ -385,6 +423,8 @@ function migrateCampaign(c: MarketingCampaign): MarketingCampaign {
     const legacy = v as unknown as { text: { mediaId?: string | null } };
     return {
       ...v,
+      customized: v.customized ?? false,
+      customization: v.customization ?? { text: v.customized ?? false, email: v.customized ?? false },
       text: {
         message: v.text?.message ?? "",
         mediaIds: v.text?.mediaIds ?? (legacy.text?.mediaId ? [legacy.text.mediaId] : []),
@@ -396,7 +436,14 @@ function migrateCampaign(c: MarketingCampaign): MarketingCampaign {
       },
     };
   };
-  return { ...c, variants: { direct: fix(c.variants.direct), ota: fix(c.variants.ota) } };
+  const seed = SEEDS.find((s) => s.id === c.id);
+  return {
+    ...c,
+    purpose: c.purpose ?? seed?.purpose ?? "Keep guests informed at the right moment in their journey.",
+    promotionMode: c.promotionMode ?? (c.id === "no-show" ? "none" : "inherit"),
+    promotionId: c.promotionId ?? null,
+    variants: { direct: fix(c.variants.direct), ota: fix(c.variants.ota) },
+  };
 }
 
 function hydrate() {
@@ -413,6 +460,8 @@ function hydrate() {
           campaigns: parsed.campaigns.map(migrateCampaign),
           media: parsed.media?.length ? parsed.media : MEDIA,
           templates: TEMPLATES,
+          promotions: parsed.promotions?.length ? parsed.promotions : PROMOTIONS,
+          globalPromotions: parsed.globalPromotions ?? { direct: "dining-10", ota: null },
         };
       }
     }
@@ -456,7 +505,19 @@ export function defaultVariant(campaignId: string, key: AudienceKey): Variant {
 }
 
 export function customizedCount(c: MarketingCampaign) {
-  return (["direct", "ota"] as AudienceKey[]).filter((k) => c.variants[k].customized).length;
+  return (["direct", "ota"] as AudienceKey[]).reduce(
+    (total, key) => total + Number(c.variants[key].customization.text) + Number(c.variants[key].customization.email),
+    0,
+  );
+}
+
+export function effectivePromotion(state: MarketingState, campaign: MarketingCampaign, audience: AudienceKey) {
+  const id = campaign.promotionMode === "custom"
+    ? campaign.promotionId
+    : campaign.promotionMode === "none"
+      ? null
+      : state.globalPromotions[audience];
+  return state.promotions.find((promotion) => promotion.id === id) ?? null;
 }
 
 export function renderPreview(input: string) {

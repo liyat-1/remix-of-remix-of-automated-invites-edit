@@ -122,6 +122,7 @@ export function LayoutLibrary({
   accent,
   photo,
   onSelect,
+  layouts,
 }: {
   open: boolean;
   onClose: () => void;
@@ -129,6 +130,7 @@ export function LayoutLibrary({
   accent: string;
   photo: string;
   onSelect: (l: EmailLayout) => void;
+  layouts?: EmailLayout[];
 }) {
   if (!open) return null;
 
@@ -151,7 +153,7 @@ export function LayoutLibrary({
       </div>
 
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
-        {LAYOUT_PRESETS.map((l) => {
+        {LAYOUT_PRESETS.filter((preset) => !layouts || layouts.includes(preset.value)).map((l) => {
           const active = value === l.value;
           return (
             <button

@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { FileText, Film, ImagePlus, Library, Search, X } from "lucide-react";
 import { MediaPicker, MediaThumb } from "./MediaPicker";
-import { FOLDERS, useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
+import { mutate, uid, useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -19,10 +19,11 @@ export function MediaStrip({
   types?: MediaType[];
   label?: string;
 }) {
-  const { media } = useMarketing();
+  const { media, folders } = useMarketing();
   const [q, setQ] = useState("");
   const [folder, setFolder] = useState<string>("all");
   const [lib, setLib] = useState(false);
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
   const pool = useMemo(() => media.filter((m) => types.includes(m.type)), [media, types]);
   const attached = ids.map((id) => pool.find((m) => m.id === id)).filter(Boolean) as MediaItem[];
@@ -100,7 +101,7 @@ export function MediaStrip({
 
         <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1">
           <FolderChip active={folder === "all"} onClick={() => setFolder("all")} label="All" count={pool.length} />
-          {FOLDERS.map((name) => {
+           {folders.map((name) => {
             const count = pool.filter((m) => m.folder === name).length;
             return (
               <FolderChip
@@ -113,6 +114,15 @@ export function MediaStrip({
             );
           })}
         </div>
+
+        <input ref={fileRef} type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx" className="hidden" onChange={(event) => {
+          const files = Array.from(event.target.files ?? []);
+          const added: string[] = [];
+          mutate((draft) => files.forEach((file) => { const id = uid(); added.push(id); draft.media.unshift({ id, name: file.name, type: file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "document", folder: folder === "all" ? folders[0] ?? "Uploads" : folder, size: `${Math.max(1, Math.round(file.size / 1024))} KB`, url: file.type.startsWith("image/") || file.type.startsWith("video/") ? URL.createObjectURL(file) : undefined, addedAt: Date.now() }); }));
+          onChange([...ids, ...added]);
+          event.target.value = "";
+        }} />
+        <Button variant="outline" size="sm" className="mt-3 w-full border-dashed" onClick={() => fileRef.current?.click()}>Upload from device</Button>
 
         <p className="mt-3 text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground">
           {query ? "Results" : "Recently added"}

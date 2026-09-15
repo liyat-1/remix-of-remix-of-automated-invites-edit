@@ -22,16 +22,15 @@ import { StepMenu } from "./StepMenu";
 import heroAmalfi from "@/assets/hero-amalfi.jpg";
 import heroValley from "@/assets/hero-valley.jpg";
 
-export type Channel = "text" | "email" | "both" | "text_fallback";
+export type Channel = "text" | "both" | "text_fallback";
 export const hasText = (c: Channel | null) => c === "text" || c === "both" || c === "text_fallback";
 export const hasEmail = (c: Channel | null) =>
-  c === "email" || c === "both" || c === "text_fallback";
+  c === "both" || c === "text_fallback";
 
 export const CHANNEL_LABELS: Record<Channel, string> = {
-  email: "Email Only",
-  text: "SMS Only",
-  both: "Email + SMS",
-  text_fallback: "SMS with Email Fallback",
+  text: "Text only",
+  both: "Text + Email",
+  text_fallback: "Text with Email fallback",
 };
 
 export const AUDIENCES = [
