@@ -362,7 +362,7 @@ function seedState(): MarketingState {
 
 /* ------------------------------------------------------------------ store */
 
-const KEY = "directful.marketing.v1";
+const KEY = "directful.marketing.v2";
 let state: MarketingState = seedState();
 let hydrated = false;
 const listeners = new Set<() => void>();
