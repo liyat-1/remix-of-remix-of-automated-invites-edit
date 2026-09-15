@@ -5,4 +5,4 @@
 - [x] Wire media area (MediaStrip) into text and email editors
 - [x] Template-then-layout flow with live layout preview
 - [x] Show edit avatar + tooltip on campaign cards
-- [ ] Verify the marketing pages in the preview
+- [x] Verify the marketing pages in the preview
