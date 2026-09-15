@@ -77,15 +77,24 @@ export function CampaignGroupPage({ group }: { group: CampaignGroup }) {
           <Button asChild variant="outline" size="sm"><Link to="/campaign">Create a drip campaign</Link></Button>
         </div>
 
-        <section className="mt-5 border-y border-border bg-card py-4">
+        <section className="mt-5 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-card sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <div><h3 className="text-[14px] font-semibold text-card-foreground">Promotions</h3><p className="mt-0.5 text-[12px] text-muted-foreground">Global defaults are available to campaigns unless a campaign overrides them.</p></div>
-            <Button variant="outline" size="sm" onClick={() => setManagingPromotions(true)}><Gift size={14} />Manage promotions</Button>
+            <div className="min-w-0"><h3 className="text-[14px] font-semibold text-card-foreground">Promotions</h3><p className="mt-0.5 text-[12px] text-muted-foreground">Global defaults are available to campaigns unless a campaign overrides them.</p></div>
+            <Button variant="outline" size="sm" className="shrink-0" onClick={() => setManagingPromotions(true)}><Gift size={14} />Manage promotions</Button>
           </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {(["ota", "direct"] as AudienceKey[]).map((audience) => {
               const promotion = promotions.find((item) => item.id === globalPromotions[audience]);
-              return <div key={audience} className="flex items-center justify-between gap-3 rounded-md border border-border bg-background px-3 py-2.5"><div className="min-w-0"><p className="text-[11px] text-muted-foreground">{audience === "direct" ? "Direct guests" : "OTA guests"}</p><p className="truncate text-[12.5px] font-semibold text-card-foreground">{promotion?.name ?? "No promotion selected"}</p></div><Button variant="ghost" size="sm" onClick={() => setManagingPromotions(true)}>{promotion ? "Change" : "Add promo"}</Button></div>;
+              return (
+                <div key={audience} className="flex min-w-0 items-center justify-between gap-3 rounded-md border border-border bg-background px-3 py-3">
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-muted-foreground">{audience === "direct" ? "Direct guests" : "OTA guests"}</p>
+                    <p className="truncate text-[12.5px] font-semibold text-card-foreground">{promotion?.name ?? "No promotion selected"}</p>
+                    {promotion && <p className="truncate text-[11px] text-muted-foreground">{promotion.detail}</p>}
+                  </div>
+                  <Button variant="ghost" size="sm" className="shrink-0" onClick={() => setManagingPromotions(true)}>{promotion ? "Change" : "Add promo"}</Button>
+                </div>
+              );
             })}
           </div>
         </section>
