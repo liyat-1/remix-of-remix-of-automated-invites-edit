@@ -29,3 +29,16 @@
 - [x] Polish the centralized Media area, including safe folder deletion and live folder updates in campaign media pickers
 - [x] Align Drip Campaign with the three supported channel strategies and Directful Marketing Messages branding
 - [x] Verify every marketing page and critical workflow at desktop and mobile widths
+
+## Marketing Messages workflow refinement
+
+- [ ] Replace campaign enable text with card toggles and keep the bulk enable/disable action state-aware
+- [ ] Simplify cards to campaign identity, strategy, updater avatar/date, and primary actions
+- [ ] Restore the compact channel-strategy panel with Select all and capped invite chips per strategy
+- [ ] Rebuild promotion management around invite/audience selection plus staged promotion assignment
+- [ ] Move campaign promotion controls into the Direct/OTA editor sections
+- [ ] Simplify the edit warning and retain the closable editor overlay with unsaved-change protection
+- [ ] Keep media Text-only; polish upload, scrolling, sizing, and remove folder filters from the picker
+- [ ] Expand content-rich template previews and structure-only layout choices without altering content
+- [ ] Add PPTX, CSV, XLSX, and other representative media samples
+- [ ] Polish and verify all marketing pages across desktop and mobile preview sizes
