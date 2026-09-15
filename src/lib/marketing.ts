@@ -268,15 +268,27 @@ export const FOLDERS = [
   "Hotel information",
 ];
 
+const DAY = 86_400_000;
+
 const MEDIA: MediaItem[] = [
   { id: "m1", name: "Pool.jpg", type: "image", folder: "Hotel information", size: "1.2 MB", dims: "1600 × 1067", url: heroAmalfi, addedAt: Date.now() - 3600_000 },
   { id: "m2", name: "Lobby.jpg", type: "image", folder: "Hotel information", size: "980 KB", dims: "1440 × 960", url: heroValley, addedAt: Date.now() - 7200_000 },
-  { id: "m3", name: "Suite-terrace.jpg", type: "image", folder: "Promotions", size: "1.6 MB", dims: "2000 × 1333", url: heroAmalfi, addedAt: Date.now() - 86_400_000 },
-  { id: "m4", name: "Welcome.mp4", type: "video", folder: "Just booked", size: "4.8 MB", addedAt: Date.now() - 2 * 86_400_000 },
-  { id: "m5", name: "Arrival-guide.pdf", type: "document", folder: "Before arrival", size: "320 KB", addedAt: Date.now() - 3 * 86_400_000 },
-  { id: "m6", name: "Spa-menu.pdf", type: "document", folder: "During stay", size: "410 KB", addedAt: Date.now() - 4 * 86_400_000 },
-  { id: "m7", name: "Breakfast.jpg", type: "image", folder: "During stay", size: "870 KB", dims: "1280 × 853", url: heroValley, addedAt: Date.now() - 5 * 86_400_000 },
-  { id: "m8", name: "Direct-offer.jpg", type: "image", folder: "Promotions", size: "1.1 MB", dims: "1600 × 900", url: heroAmalfi, addedAt: Date.now() - 6 * 86_400_000 },
+  { id: "m3", name: "Suite-terrace.jpg", type: "image", folder: "Promotions", size: "1.6 MB", dims: "2000 × 1333", url: heroAmalfi, addedAt: Date.now() - DAY },
+  { id: "m4", name: "Welcome.mp4", type: "video", folder: "Just booked", size: "4.8 MB", poster: familyPool, addedAt: Date.now() - 2 * DAY },
+  { id: "m5", name: "Arrival-guide.pdf", type: "document", folder: "Before arrival", size: "320 KB", addedAt: Date.now() - 3 * DAY },
+  { id: "m6", name: "Spa-menu.pdf", type: "document", folder: "During stay", size: "410 KB", addedAt: Date.now() - 4 * DAY },
+  { id: "m7", name: "Breakfast.jpg", type: "image", folder: "During stay", size: "870 KB", dims: "1280 × 853", url: breakfastTerrace, addedAt: Date.now() - 5 * DAY },
+  { id: "m8", name: "Direct-offer.jpg", type: "image", folder: "Promotions", size: "1.1 MB", dims: "1600 × 900", url: rooftopBar, addedAt: Date.now() - 6 * DAY },
+  { id: "m9", name: "Deluxe-sea-room.jpg", type: "image", folder: "Hotel information", size: "1.4 MB", dims: "1600 × 1200", url: roomBalcony, addedAt: Date.now() - 7 * DAY },
+  { id: "m10", name: "Infinity-pool-dusk.jpg", type: "image", folder: "Promotions", size: "1.9 MB", dims: "1600 × 1200", url: poolDusk, addedAt: Date.now() - 8 * DAY },
+  { id: "m11", name: "Front-desk.jpg", type: "image", folder: "Just booked", size: "1.1 MB", dims: "1600 × 1200", url: lobbyArrival, addedAt: Date.now() - 9 * DAY },
+  { id: "m12", name: "Spa-treatment.jpg", type: "image", folder: "During stay", size: "960 KB", dims: "1600 × 1200", url: spaTreatment, addedAt: Date.now() - 10 * DAY },
+  { id: "m13", name: "Family-pool.jpg", type: "image", folder: "Promotions", size: "1.3 MB", dims: "1600 × 1200", url: familyPool, addedAt: Date.now() - 11 * DAY },
+  { id: "m14", name: "Courtyard.jpg", type: "image", folder: "Before arrival", size: "1.5 MB", dims: "1600 × 1200", url: courtyard, addedAt: Date.now() - 12 * DAY },
+  { id: "m15", name: "Bed-detail.jpg", type: "image", folder: "Hotel information", size: "880 KB", dims: "1600 × 1200", url: suiteDetail, addedAt: Date.now() - 13 * DAY },
+  { id: "m16", name: "Terrace-welcome.mp4", type: "video", folder: "Before arrival", size: "6.2 MB", poster: rooftopBar, addedAt: Date.now() - 14 * DAY },
+  { id: "m17", name: "House-rules.pdf", type: "document", folder: "Post-checkout", size: "240 KB", addedAt: Date.now() - 15 * DAY },
+  { id: "m18", name: "Wi-Fi-card.pdf", type: "document", folder: "Hotel information", size: "120 KB", addedAt: Date.now() - 16 * DAY },
 ];
 
 type Seed = {
