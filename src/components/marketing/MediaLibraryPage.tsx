@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
-import { Folder, FolderPlus, Pencil, Search, Trash2, Upload } from "lucide-react";
+import { FileUp, Folder, FolderOpen, FolderPlus, Pencil, Search, Trash2, Upload } from "lucide-react";
 import { MarketingShell } from "./MarketingShell";
 import { MediaThumb } from "./MediaPicker";
 import { mutate, uid, useMarketing, type MediaType } from "@/lib/marketing";
+import { Button } from "@/components/ui/button";
 
 const TYPES: ("all" | MediaType)[] = ["all", "image", "video", "document"];
 
@@ -120,18 +121,20 @@ export function MediaLibraryPage() {
 
   return (
     <MarketingShell title="Media">
-      <div className="mx-auto flex max-w-6xl gap-6 px-6 py-6">
-        <aside className="w-56 shrink-0">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row">
+        <aside className="w-full shrink-0 lg:w-56">
           <div className="flex items-center justify-between px-1 pb-2">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">Folders</p>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={createFolder}
               aria-label="New folder"
               title="New folder"
-              className="text-zinc-400 hover:text-zinc-800"
+              className="size-7 text-muted-foreground"
             >
               <FolderPlus size={15} />
-            </button>
+            </Button>
           </div>
 
           <button
@@ -145,7 +148,8 @@ export function MediaLibraryPage() {
             <span className="text-[10.5px] text-zinc-400">{countIn("All")}</span>
           </button>
 
-          {folders.map((f) => {
+          <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:block">
+           {folders.map((f) => {
             const active = folder === f;
             if (renamingFolder === f) {
               return (
@@ -196,18 +200,37 @@ export function MediaLibraryPage() {
                 </button>
               </div>
             );
-          })}
+           })}
+          </div>
 
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={createFolder}
-            className="mt-2 flex w-full items-center gap-1.5 rounded-md border border-dashed border-zinc-300 px-2 py-2 text-[12px] font-medium text-zinc-500 hover:border-zinc-400 hover:text-zinc-700"
+            className="mt-2 w-full border-dashed text-muted-foreground"
           >
             <FolderPlus size={14} />
             New folder
-          </button>
+          </Button>
         </aside>
 
         <div className="min-w-0 flex-1">
+          <header className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-md bg-secondary text-secondary-foreground">
+                {folder === "All" ? <FolderOpen size={19} /> : <Folder size={19} />}
+              </span>
+              <div className="min-w-0">
+                <h2 className="truncate text-[16px] font-semibold text-foreground">{folder === "All" ? "All media" : folder}</h2>
+                <p className="text-[12px] text-muted-foreground">{countIn(folder)} {countIn(folder) === 1 ? "asset" : "assets"}</p>
+              </div>
+            </div>
+            <Button onClick={() => fileRef.current?.click()} size="sm">
+              <Upload size={14} />
+              Upload files
+            </Button>
+          </header>
+
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[200px] flex-1">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -218,13 +241,6 @@ export function MediaLibraryPage() {
                 className="w-full rounded-md border border-zinc-200 bg-white py-2 pl-9 pr-3 text-[13px] outline-none focus:border-blue-600"
               />
             </div>
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 py-2 text-[12.5px] font-semibold text-white hover:opacity-90"
-            >
-              <Upload size={14} />
-              Upload
-            </button>
             <input
               ref={fileRef}
               type="file"
@@ -262,21 +278,38 @@ export function MediaLibraryPage() {
               setDragging(false);
               upload(e.dataTransfer.files);
             }}
-            className={`mt-4 rounded-lg border-2 border-dashed p-4 transition-colors ${
-              dragging ? "border-blue-500 bg-blue-50/60" : "border-transparent"
+            className={`mt-4 rounded-lg border p-4 transition-colors sm:p-5 ${
+              dragging ? "border-ring bg-accent" : "border-border bg-card"
             }`}
           >
-            <p className="pb-3 text-[12px] text-zinc-400">
-              Drop files here to add them to {folder === "All" ? folders[0] : folder}.
-            </p>
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="mb-5 flex w-full items-center gap-4 rounded-md border border-dashed border-border bg-muted/40 px-4 py-4 text-left transition-colors hover:border-ring hover:bg-accent sm:px-5"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border bg-background text-muted-foreground shadow-sm">
+                <FileUp size={18} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[13px] font-semibold text-foreground">
+                  Drop files into {folder === "All" ? folders[0] : folder}
+                </span>
+                <span className="mt-0.5 block text-[11.5px] text-muted-foreground">
+                  Or click to browse images, videos, and documents
+                </span>
+              </span>
+              <span className="hidden rounded-md border border-border bg-background px-3 py-1.5 text-[11.5px] font-medium text-foreground sm:block">
+                Choose files
+              </span>
+            </button>
 
-            <div className="grid gap-4 pb-10 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {list.map((m) => (
                 <div
                   key={m.id}
                   draggable
                   onDragStart={(e) => e.dataTransfer.setData("text/media-id", m.id)}
-                  className="group overflow-hidden rounded-lg border border-zinc-200 bg-white"
+                  className="group overflow-hidden rounded-md border border-border bg-card shadow-sm transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-ring hover:shadow-md"
                 >
                   <div className="aspect-[4/3] overflow-hidden bg-zinc-50">
                     <MediaThumb item={m} />
@@ -331,9 +364,13 @@ export function MediaLibraryPage() {
                 </div>
               ))}
               {list.length === 0 && (
-                <p className="col-span-full py-16 text-center text-[13px] text-zinc-400">
-                  Nothing here yet — drop files in or use Upload.
-                </p>
+                <div className="col-span-full grid min-h-44 place-items-center rounded-md border border-dashed border-border bg-muted/25 p-8 text-center">
+                  <div>
+                    <span className="mx-auto grid size-10 place-items-center rounded-md bg-secondary text-muted-foreground"><FolderPlus size={18} /></span>
+                    <p className="mt-3 text-[13px] font-semibold text-foreground">This folder is ready for files</p>
+                    <p className="mt-1 text-[12px] text-muted-foreground">Drop them here or use the upload area above.</p>
+                  </div>
+                </div>
               )}
             </div>
           </div>
