@@ -66,14 +66,14 @@ export function CampaignCard({
             <span className="truncate font-medium text-card-foreground">{edit.by}</span>
             <span suppressHydrationWarning>· Updated {mounted ? timeAgo(edit.at) : ""}</span>
             <span className="pointer-events-none absolute bottom-7 left-0 z-10 w-56 rounded-md bg-foreground px-2.5 py-2 text-[11px] leading-snug text-background opacity-0 shadow-lift transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
-              Edited by {edit.by} · {timeAgo(edit.at)}
+              Edited by {edit.by}{mounted ? ` · ${timeAgo(edit.at)}` : ""}
               <span className="mt-0.5 block text-background/70">{AUDIENCE_LABEL[edit.audience]}{mounted ? ` · ${fullTime(edit.at)}` : ""}</span>
             </span>
           </div>
         )}
-        <div className="grid grid-cols-[auto_1fr_auto] border-t border-border p-2">
-          <Button variant="ghost" size="sm" onClick={onTest}><FlaskConical size={13} />Test</Button>
-          <Button variant="brand" size="sm" onClick={onEdit}><Pencil size={13} />Edit content</Button>
+        <div className="flex items-center gap-2 border-t border-border p-2">
+          <Button variant="ghost" size="sm" onClick={onTest} className="shrink-0"><FlaskConical size={13} />Test</Button>
+          <Button variant="brand" size="sm" onClick={onEdit} className="min-w-0 flex-1"><Pencil size={13} /><span className="truncate">Edit content</span></Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-8" aria-label={`More actions for ${campaign.name}`}><Ellipsis size={16} /></Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
