@@ -28,7 +28,7 @@ export function MediaStrip({
   const attached = ids.map((id) => pool.find((m) => m.id === id)).filter(Boolean) as MediaItem[];
 
   const query = q.trim().toLowerCase();
-  const inFolder = folder === "all" ? pool : pool.filter((m) => m.folderId === folder);
+  const inFolder = folder === "all" ? pool : pool.filter((m) => m.folder === folder);
   const suggestions = (
     query ? inFolder.filter((m) => m.name.toLowerCase().includes(query)) : [...inFolder].sort((a, b) => b.addedAt - a.addedAt)
   )
@@ -100,14 +100,14 @@ export function MediaStrip({
 
         <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1">
           <FolderChip active={folder === "all"} onClick={() => setFolder("all")} label="All" count={pool.length} />
-          {FOLDERS.map((f) => {
-            const count = pool.filter((m) => m.folderId === f.id).length;
+          {FOLDERS.map((name) => {
+            const count = pool.filter((m) => m.folder === name).length;
             return (
               <FolderChip
-                key={f.id}
-                active={folder === f.id}
-                onClick={() => setFolder(f.id)}
-                label={f.name}
+                key={name}
+                active={folder === name}
+                onClick={() => setFolder(name)}
+                label={name}
                 count={count}
               />
             );
