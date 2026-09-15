@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, Image as ImageIcon, Film, FileText, Search, Check, Play, Folder } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useMarketing, type MediaItem, type MediaType } from "@/lib/marketing";
 
 export const TYPE_ICON: Record<MediaType, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -20,7 +21,7 @@ const DOC_TONE: Record<string, string> = {
   PPTX: "#ea580c",
 };
 
-/** Realistic-looking thumbnail: photo, video still with play badge, or a paper document. */
+/** Clean asset thumbnail used consistently across the library and editors. */
 export function MediaThumb({ item, className = "" }: { item: MediaItem; className?: string }) {
   if (item.type === "image" && item.url) {
     return <img src={item.url} alt={item.name} className={`block size-full object-cover ${className}`} />;
@@ -28,32 +29,22 @@ export function MediaThumb({ item, className = "" }: { item: MediaItem; classNam
 
   if (item.type === "video") {
     return (
-      <div className={`relative size-full overflow-hidden bg-zinc-900 ${className}`}>
+      <div className={`relative size-full overflow-hidden bg-primary ${className}`}>
         {item.url ? (
-          <video src={item.url} muted playsInline preload="metadata" className="size-full object-cover" />
+          <video src={item.url} muted playsInline preload="metadata" className="size-full object-cover opacity-90" />
         ) : (
-          <div
-            className="size-full"
-            style={{ background: "linear-gradient(135deg, #1f2937 0%, #4b5563 55%, #111827 100%)" }}
-          />
+          <div className="grid size-full place-items-center bg-secondary text-muted-foreground">
+            <Film size={28} strokeWidth={1.5} />
+          </div>
         )}
-        <div className="absolute inset-x-0 top-0 flex justify-between px-1 py-1 opacity-40">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <span key={i} className="h-1.5 w-1.5 rounded-[1px] bg-white" />
-          ))}
-        </div>
-        <div className="absolute inset-x-0 bottom-0 flex justify-between px-1 py-1 opacity-40">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <span key={i} className="h-1.5 w-1.5 rounded-[1px] bg-white" />
-          ))}
-        </div>
+        {item.url && <div className="absolute inset-0 bg-primary/15" />}
         <span className="absolute inset-0 grid place-items-center">
-          <span className="grid size-9 place-items-center rounded-full bg-white/90 text-zinc-900 shadow">
+          <span className="grid size-10 place-items-center rounded-full bg-background/95 text-foreground shadow-lg ring-1 ring-border">
             <Play size={15} className="ml-0.5 fill-current" />
           </span>
         </span>
-        <span className="absolute bottom-1.5 right-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-semibold tracking-wide text-white">
-          {extOf(item.name)}
+        <span className="absolute bottom-2 left-2 rounded bg-background/90 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-foreground shadow-sm backdrop-blur-sm">
+          Video · {extOf(item.name)}
         </span>
       </div>
     );
@@ -129,9 +120,9 @@ export function MediaPicker({
               </p>
             )}
           </div>
-          <button onClick={onClose} aria-label="Close" className="text-zinc-400 hover:text-zinc-700">
+           <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close" className="text-muted-foreground">
             <X size={18} />
-          </button>
+           </Button>
         </div>
 
         <div className="border-b border-zinc-100 px-5 py-3">
@@ -209,12 +200,12 @@ export function MediaPicker({
         {multi && (
           <div className="flex items-center justify-between border-t border-zinc-100 px-5 py-3">
             <p className="text-[12.5px] text-zinc-500">{selectedIds.length} attached</p>
-            <button
+             <Button
               onClick={onClose}
-              className="rounded-md bg-blue-600 px-4 py-2 text-[12.5px] font-semibold text-white hover:bg-blue-700"
+               size="sm"
             >
               Done
-            </button>
+             </Button>
           </div>
         )}
       </div>
